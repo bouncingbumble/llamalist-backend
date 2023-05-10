@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="google-signin-client_id"
+            content="1045598120342-505s5f6k0fc02ifmdch5idnbl9vngoto.apps.googleusercontent.com"
+        />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Roboto:wght@300;400;500;700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap"
+            rel="stylesheet"
+        />
+        <script
+            src="https://apis.google.com/js/platform.js"
+            async
+            defer
+        ></script>
+        <script>
+            let clicked = false
+            window.onload = (event) => {
+                const isClicked = new URL(
+                    window.location.href
+                ).searchParams.get('clicked')
+                const error = new URL(window.location.href).searchParams.get(
+                    'error'
+                )
+
+                if (isClicked === 'true') {
+                    clicked = true
+                }
+                if (error !== null) {
+                    handleBadLogin(error)
+                }
+            }
+            function handleBadLogin(error) {
+                let errorMessage = undefined
+                let id = undefined
+                let email = undefined
+
+                if (error === 'email') {
+                    errorMessage = 'Invalid email, please try again'
+                    id = 'email'
+                } else if (error === 'password') {
+                    errorMessage = 'Wrong password, please try again'
+                    id = 'password'
+                    email = new URL(window.location.href).searchParams.get(
+                        'email'
+                    )
+                    if (email) {
+                        document.getElementById('email-input').value = email
+                    }
+                } else if (error === 'noGoogleAuthWithOfficeOtter') {
+                    errorMessage =
+                        'This google account is not authorized with Office Otter'
+                } else if (error === 'notVerifiedByGoogle') {
+                    errorMessage = 'This account is not verified by Google'
+                }
+
+                const textNode = document.createTextNode(errorMessage)
+                const currentElement = document.getElementById('signin')
+                const newElement = document.createElement('h4')
+
+                newElement.appendChild(textNode)
+                newElement.style.margin = '0px'
+                newElement.style.color = 'rgba(255, 0, 0, 0.8)'
+                newElement.style.fontWeight = 300
+                newElement.style.fontSize = '15px'
+                newElement.style.marginBottom = '0px'
+                newElement.style.marginTop = '10px'
+                newElement.style.fontFamily =
+                    'Roboto, Helvetica, Arial, sans-serif'
+
+                document
+                    .getElementById('form')
+                    .insertBefore(newElement, currentElement)
+                document.getElementById('signin').style.marginTop = '8px'
+
+                if (id) {
+                    document.getElementById(id).style.border =
+                        'solid rgb(255, 0, 0, 0.8) 1.75px'
+                }
+            }
+            function onSignIn(googleUser) {
+                if (clicked) {
+                    const data = {
+                        googleToken: googleUser.getAuthResponse().id_token,
+                    }
+                    fetch(
+                        `https://office-otter-be.herokuapp.com/api/v1/auth/signin/chrome/google`,
+                        {
+                            headers: {
+                                accept: 'application/json, text/plain, */*',
+                                'accept-language': 'en-US,en;q=0.9',
+                                'cache-control': 'no-cache',
+                                'content-type':
+                                    'application/json;charset=UTF-8',
+                                pragma: 'no-cache',
+                                'sec-fetch-dest': 'empty',
+                                'sec-fetch-mode': 'cors',
+                                'sec-fetch-site': 'cross-site',
+                            },
+                            referrerPolicy: 'strict-origin-when-cross-origin',
+                            body: JSON.stringify(data),
+                            method: 'POST',
+                            mode: 'cors',
+                            credentials: 'include',
+                        }
+                    ).then(
+                        (successfulRedirect) => {
+                            const token = new URL(
+                                successfulRedirect.url
+                            ).searchParams.get('authToken')
+                            if (token) {
+                                window.location.href =
+                                    'https://cnfbcpcddokhioeecbjbmdibjfkhpcpp.chromiumapp.org/?authToken=' +
+                                    token
+                            } else {
+                                window.location.href = successfulRedirect.url
+                            }
+                        },
+                        (failedRedirect) => {
+                            console.log(failedRedirect)
+                        }
+                    )
+                } else {
+                    googleSignOut()
+                }
+            }
+            function googleSignOut() {
+                if (!gapi.auth2) {
+                    gapi.load('auth2', () => {
+                        gapi.auth2.init()
+                    })
+                }
+                const auth2 = gapi.auth2.getAuthInstance()
+                auth2.signOut()
+                auth2.disconnect()
+            }
+        </script>
+        <title>Chrome Signin</title>
+    </head>
+    <body
+        style="
+            display: flex !important;
+            height: 100%;
+            background-color: #e5ecf6;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-evenly;
+        "
+    >
+        <div
+            style="
+                height: 475px;
+                width: 376px;
+                display: flex;
+                padding: 48px;
+                flex-direction: column;
+                background-color: #ffffff;
+                border-radius: 8px;
+            "
+        >
+            <div
+                style="
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                "
+            >
+                <div>
+                    <div style="display: flex">
+                        <div
+                            style="
+                                display: flex;
+                                max-width: 55px;
+                                align-self: center;
+                            "
+                        >
+                            <img
+                                src="https://office-otter-production.s3.us-east-2.amazonaws.com/894d2eaf-1225-48dc-8b96-e3e6b330a745otterboi.png"
+                                style="max-width: 100%; height: 60px"
+                            />
+                        </div>
+                        <div
+                            style="
+                                color: #061935;
+                                display: flex;
+                                font-size: 48px;
+                                align-self: center;
+                                font-style: normal;
+                                font-family: Poppins, sans-serif;
+                                font-weight: bold;
+                                line-height: normal;
+                                font-stretch: normal;
+                                padding-left: 8px;
+                                letter-spacing: -0.75px;
+                            "
+                        >
+                            office otter
+                        </div>
+                    </div>
+                    <h3
+                        style="
+                            font-size: 28px;
+                            font-style: normal;
+                            font-family: Roboto, Helvetica, Arial, sans-serif;
+                            font-weight: 300;
+                            line-height: normal;
+                            font-stretch: normal;
+                            letter-spacing: 0.13px;
+                            color: rgb(155, 173, 201);
+                            margin: 0px;
+                        "
+                    >
+                        Welcome to our chrome extension! Please sign in.
+                    </h3>
+                </div>
+                <form
+                    id="form"
+                    action="https://office-otter-be.herokuapp.com/api/v1/auth/signin/chrome"
+                    method="POST"
+                    style="
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        margin-top: 16px;
+                    "
+                >
+                    <div
+                        id="email"
+                        style="
+                            position: relative;
+                            width: 100%;
+                            border-radius: 4px;
+                            color: rgba(0, 0, 0, 0.87);
+                            cursor: text;
+                            display: inline-flex;
+                            font-size: 16px;
+                            box-sizing: border-box;
+                            font-style: normal;
+                            align-items: center;
+                            font-family: Roboto, Helvetica, Arial, sans-serif;
+                            font-weight: normal;
+                            line-height: 1.1876em;
+                            white-space: pre-wrap;
+                            font-stretch: normal;
+                            letter-spacing: -0.2px;
+                            height: 56px;
+                            border: solid #e5ecf6 1px;
+                            margin-bottom: 10px;
+                        "
+                    >
+                        <input
+                            id="email-input"
+                            type="email"
+                            name="email"
+                            placeholder="Email..."
+                            style="
+                                height: 56px;
+                                width: 376px;
+                                font: inherit;
+                                color: currentColor;
+                                width: 100%;
+                                border: 0;
+                                height: 1.1876em;
+                                margin: 0;
+                                display: block;
+                                padding: 18.5px 14px;
+                                min-width: 0;
+                                background: none;
+                                box-sizing: content-box;
+                            "
+                        />
+                    </div>
+                    <div
+                        id="password"
+                        style="
+                            position: relative;
+                            width: 100%;
+                            border-radius: 4px;
+                            color: rgba(0, 0, 0, 0.87);
+                            cursor: text;
+                            display: inline-flex;
+                            font-size: 16px;
+                            box-sizing: border-box;
+                            font-style: normal;
+                            align-items: center;
+                            font-family: Roboto, Helvetica, Arial, sans-serif;
+                            font-weight: normal;
+                            line-height: 1.1876em;
+                            white-space: pre-wrap;
+                            font-stretch: normal;
+                            letter-spacing: -0.2px;
+                            height: 56px;
+                            border: solid #e5ecf6 1px;
+                        "
+                    >
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Password..."
+                            style="
+                                height: 56px;
+                                width: 376px;
+                                font: inherit;
+                                color: currentColor;
+                                width: 100%;
+                                border: 0;
+                                height: 1.1876em;
+                                margin: 0;
+                                display: block;
+                                padding: 18.5px 14px;
+                                min-width: 0;
+                                background: none;
+                                box-sizing: content-box;
+                            "
+                        />
+                    </div>
+                    <button
+                        tabindex="0"
+                        type="submit"
+                        value="Login"
+                        id="signin"
+                        style="
+                            margin-top: 16px;
+                            width: 100%;
+                            color: #ffffff;
+                            background-color: #0a58ce;
+                            height: 56px;
+                            padding: 8px 22px;
+                            font-size: 17px;
+                            min-width: 175px;
+                            font-style: normal;
+                            text-align: center;
+                            font-family: Montserrat, sans-serif;
+                            font-weight: 600;
+                            line-height: 1.59;
+                            font-stretch: normal;
+                            border-radius: 8px;
+                            letter-spacing: -0.24px;
+                            border: 0px;
+                            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+                            cursor: pointer;
+                        "
+                    >
+                        <span style="width: 100%">Sign in</span>
+                    </button>
+                    <div
+                        style="display: flex; align-items: center; height: 10px"
+                    >
+                        <hr
+                            style="
+                                width: 155px;
+                                height: 1px;
+                                border: none;
+                                opacity: 0.75;
+                                background-color: rgb(155, 173, 201);
+                            "
+                        />
+                        <h5
+                            style="
+                                font-style: normal;
+                                font-family: Roboto, Helvetica, Arial,
+                                    sans-serif;
+                                line-height: 1;
+                                font-stretch: normal;
+                                letter-spacing: 0.1px;
+                                font-size: 15px;
+                                color: rgb(155, 173, 201);
+                                font-weight: normal;
+                            "
+                        >
+                            or
+                        </h5>
+                        <hr
+                            style="
+                                width: 155px;
+                                height: 1px;
+                                border: none;
+                                opacity: 0.75;
+                                background-color: rgb(155, 173, 201);
+                            "
+                        />
+                    </div>
+                    <div
+                        class="g-signin2"
+                        style="border-radius: 8px"
+                        data-border-radius="8px"
+                        data-longtitle="true"
+                        data-width="376px"
+                        data-height="46px"
+                        data-onsuccess="onSignIn"
+                        data-ux_mode="redirect"
+                        data-redirect_uri="https://office-otter-be.herokuapp.com/signin/chromeext?clicked=true"
+                    >
+                        override text
+                    </div>
+                    <h6
+                        style="
+                            font-size: 13px;
+                            color: rgb(155, 173, 201);
+                            font-style: normal;
+                            font-family: Roboto, Helvetica, Arial, sans-serif;
+                            font-weight: 350;
+                            line-height: 1.33;
+                            font-stretch: normal;
+                            letter-spacing: normal;
+                            margin: 0;
+                            display: block;
+                        "
+                    >
+                        By signing in, you agree to our
+                        <a
+                            target="_blank"
+                            href="https://app.officeotter.com/tos"
+                            style="
+                                color: rgba(10, 88, 206, 0.8);
+                                text-decoration: none;
+                            "
+                        >
+                            Terms of Use and Privacy Policy
+                        </a>
+                    </h6>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

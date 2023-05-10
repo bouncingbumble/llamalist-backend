@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="google-signin-client_id"
+            content="1045598120342-505s5f6k0fc02ifmdch5idnbl9vngoto.apps.googleusercontent.com"
+        />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            rel="icon"
+            href="https://office-otter-production.s3.us-east-2.amazonaws.com/4d5c519f-63d9-45a9-93fb-e456ed2ca782otter.ico"
+        />
+        <script
+            src="https://apis.google.com/js/platform.js"
+            async
+            defer
+        ></script>
+        <style>
+            .oo-input {
+                width: 100%;
+                outline: transparent solid 2px;
+                outline-offset: 2px;
+                position: relative;
+                appearance: none;
+                font-size: 18px;
+                padding-inline-start: 1em;
+                padding-inline-end: 1em;
+                height: 3em;
+                border-radius: 8px;
+                border: 2px solid transparent;
+                background-color: #edf2f7;
+                overflow-wrap: break-word;
+                box-sizing: border-box;
+                font-family: 'Poppins', sans-serif;
+                font-weight: 300;
+                letter-spacing: normal;
+                transition-property: background-color, border-color, color;
+                transition-duration: 200ms;
+            }
+            .oo-input::placeholder {
+                color: #a0aec0;
+            }
+            .oo-input:hover {
+                background-color: #e2e8f0;
+            }
+            .oo-input:focus {
+                background-color: white;
+                border: 2px solid #0a58ce;
+                outline-offset: 2px;
+            }
+            .oo-label {
+                display: block;
+                text-align: start;
+                font-size: 16px;
+                margin-inline-end: 0.75rem;
+                margin-bottom: 0.5rem;
+                font-weight: 500;
+                margin-top: 0px;
+                color: #1a202c;
+            }
+        </style>
+        <script>
+            let windowSize = window.innerWidth > 460 ? 'md' : 'sm'
+
+            addEventListener('resize', (event) => {
+                checkLayout()
+            })
+
+            window.onload = () => {
+                // create the right layout for desktop vs mobile
+                checkLayout(true)
+
+                // grab query params
+                const params = new URLSearchParams(window.location.search)
+                const msId = params.get('msUserId')
+                const message = params.get('message')
+                const link = params.get('link')
+
+                // create input elements for them
+                const msIdInput = document.createElement('input')
+                const messageInput = document.createElement('input')
+                const linkInput = document.createElement('input')
+                const anchorElement = document.getElementById('email')
+
+                // populate and hide the elements
+                const hideElement =
+                    'visibility: hidden; height: 0px; margin: 0px; position: absolute'
+
+                msIdInput.type = 'text'
+                msIdInput.name = 'msId'
+                msIdInput.value = msId
+                msIdInput.style = hideElement
+
+                messageInput.type = 'text'
+                messageInput.name = 'message'
+                messageInput.value = message
+                messageInput.style = hideElement
+
+                linkInput.type = 'text'
+                linkInput.name = 'link'
+                linkInput.value = link
+                linkInput.style = hideElement
+
+                // add them to the DOM
+                document
+                    .getElementById('form')
+                    .insertBefore(msIdInput, anchorElement)
+
+                document
+                    .getElementById('form')
+                    .insertBefore(messageInput, anchorElement)
+
+                document
+                    .getElementById('form')
+                    .insertBefore(linkInput, anchorElement)
+
+                // check for an error message
+                const error = new URLSearchParams(window.location.search).get(
+                    'error'
+                )
+                if (error) {
+                    handleBadLogin(error)
+                }
+            }
+
+            const checkLayout = (init) => {
+                if (init) {
+                    if (windowSize === 'sm') {
+                        adjustLayout('sm')
+                    } else if (windowSize === 'md') {
+                        adjustLayout('md')
+                    }
+                }
+                if (window.innerWidth > 470 && windowSize === 'sm') {
+                    windowSize = 'md'
+                    adjustLayout('md')
+                } else if (window.innerWidth <= 470 && windowSize === 'md') {
+                    windowSize = 'sm'
+                    adjustLayout('sm')
+                }
+            }
+
+            const adjustLayout = (size) => {
+                const otterLogo = document.getElementById('otter-logo')
+                const imgContainer = document.getElementById('img-container')
+                const welcomeMessage = document.getElementById('welcome-message')
+                const signUpMessage = document.getElementById('signup-message')
+                const tosMessage = document.getElementById('tos-message')
+
+                if (size === 'sm') {
+                    otterLogo.style.display = 'none'
+                    imgContainer.style.justifyContent = 'center'
+                    welcomeMessage.style.fontSize = '14px'
+                    signUpMessage.style.display = 'none'
+                    tosMessage.style.display = 'none'
+                } else if (size === 'md') {
+                    otterLogo.style.display = ''
+                    imgContainer.style.justifyContent = ''
+                    welcomeMessage.style.fontSize = ''
+                    signUpMessage.style.display = ''
+                    tosMessage.style.display = ''
+                }
+            }
+
+            function handleBadLogin(error) {
+                let errorMessage = undefined
+                let id = undefined
+                let email = undefined
+
+                if (error === 'email') {
+                    errorMessage = 'Invalid email, please try again'
+                    id = 'email-input'
+                } else if (error === 'password') {
+                    errorMessage = 'Wrong password, please try again'
+                    id = 'password-input'
+                    email = new URL(window.location.href).searchParams.get(
+                        'email'
+                    )
+                    if (email) {
+                        document.getElementById('email-input').value = email
+                    }
+                } else if (error === 'noGoogleAuthWithOfficeOtter') {
+                    errorMessage =
+                        'This google account is not authorized with Office Otter'
+                } else if (error === 'notVerifiedByGoogle') {
+                    errorMessage = 'This account is not verified by Google'
+                }
+
+                const textNode = document.createTextNode(errorMessage)
+                const currentElement = document.getElementById('signin')
+                const newElement = document.createElement('h4')
+
+                newElement.appendChild(textNode)
+                newElement.style.margin = '0px'
+                newElement.style.color = 'rgba(255, 0, 0, 0.8)'
+                newElement.style.fontWeight = 300
+                newElement.style.fontSize = '15px'
+                newElement.style.marginBottom = '0px'
+                newElement.style.marginTop = '10px'
+                newElement.style.fontFamily = 'Poppins, sans-serif'
+
+                document
+                    .getElementById('form')
+                    .insertBefore(newElement, currentElement)
+                document.getElementById('signin').style.marginTop = '8px'
+
+                if (id) {
+                    document.getElementById(id).style.border =
+                        'solid rgb(255, 0, 0, 0.8) 1.75px'
+                }
+            }
+        </script>
+        <title>Microsoft Signin</title>
+    </head>
+    <body
+        style="
+            display: flex !important;
+            background-color: #ffffff;
+            align-items: center;
+            flex-direction: row;
+            justify-content: space-evenly;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: 'Poppins', sans-serif;
+        "
+    >
+        <div
+            style="
+                width: 80%;
+                max-width: 376px;
+                display: flex;
+                padding: 48px;
+                flex-direction: column;
+                background-color: #ffffff;
+                border-radius: 8px;
+            "
+        >
+            <div
+                style="
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                "
+            >
+                <div>
+                    <div id="img-container" style="display: flex;">
+                        <div
+                            style="
+                                display: flex;
+                                max-width: 55px;
+                                align-self: center;
+                            "
+                        >
+                            <img
+                                src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/apple/232/otter_1f9a6.png"
+                                style="
+                                    max-width: 100%;
+                                    height: 60px;
+                                    margin-bottom: 8px;
+                                "
+                            />
+                        </div>
+                        <div
+                            id="otter-logo"
+                            style="
+                                color: #061935;
+                                display: flex;
+                                font-size: 48px;
+                                align-self: center;
+                                font-style: normal;
+                                line-height: normal;
+                                font-stretch: normal;
+                                padding-left: 8px;
+                                letter-spacing: -0.75px;
+                                font-weight: 700;
+                            "
+                        >
+                            office otter
+                        </div>
+                    </div>
+                    <h3
+                        id="welcome-message"
+                        style="
+                            font-size: 18px;
+                            font-weight: 300;
+                            line-height: normal;
+                            font-stretch: normal;
+                            letter-spacing: 0.13px;
+                            color: rgb(155, 173, 201);
+                            margin: 0px;
+                        "
+                    >
+                        Welcome to our MS Teams integration!
+                        Sign in once and we'll remember you
+                    </h3>
+                </div>
+                <form
+                    id="form"
+                    action="https://office-otter-be.herokuapp.com/api/v1/auth/signin/msteams"
+                    method="POST"
+                    style="
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: space-between;
+                        margin-top: 16px;
+                    "
+                >
+                    <div id="email">
+                        <label
+                            for="email-input"
+                            id="email-label"
+                            class="oo-label"
+                        >
+                            Email
+                        </label>
+                        <input
+                            id="email-input"
+                            type="email"
+                            name="email"
+                            placeholder="Email..."
+                            class="oo-input"
+                        />
+                    </div>
+                    <div id="password">
+                        <label
+                            for="password-input"
+                            id="password-label"
+                            class="oo-label"
+                            style="margin-top: 8px"
+                        >
+                            Password
+                        </label>
+                        <input
+                            id="password-input"
+                            type="password"
+                            name="password"
+                            placeholder="Password..."
+                            class="oo-input"
+                        />
+                    </div>
+                    <button
+                        tabindex="0"
+                        type="submit"
+                        value="Login"
+                        id="signin"
+                        style="
+                            margin-top: 16px;
+                            width: 100%;
+                            color: #ffffff;
+                            background-color: #0a58ce;
+                            height: 56px;
+                            padding: 8px 22px;
+                            font-size: 17px;
+                            min-width: 175px;
+                            font-style: normal;
+                            text-align: center;
+                            font-weight: 600;
+                            line-height: 1.59;
+                            font-stretch: normal;
+                            border-radius: 8px;
+                            letter-spacing: -0.24px;
+                            border: 0px;
+                            box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.2);
+                            cursor: pointer;
+                        "
+                    >
+                        <span style="width: 100%">Sign in</span>
+                    </button>
+                    <div style="align-self: center; display: flex; align-items: center; font-weight: 300; margin-top: 8px; margin-bottom: 8px;">
+                        <p id="signup-message" style="margin: 0px;">Don't have an account?</p>
+                        <a href="https://app.officeotter.com/signup" 
+                           target="_blank" 
+                           style="text-decoration: none; color: #0a58ce; margin-left: 4px;"
+                        >
+                            Go to sign up
+                            <img src="https://office-otter-production.s3.us-east-2.amazonaws.com/9d88f0b4-187c-456a-89cb-01c09ae0894fpopout.png" alt="popout icon" style="height: 10px; width: 10px">
+                        </a>
+                    </div>
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 10px;
+                            margin-top: 4px;
+                            margin-bottom: 4px;
+                        "
+                    >
+                    <h6
+                        style="
+                            font-size: 12px;
+                            color: rgb(155, 173, 201);
+                            font-style: normal;
+                            font-weight: 350;
+                            line-height: 1.33;
+                            font-stretch: normal;
+                            letter-spacing: normal;
+                            margin: 0;
+                        "
+                    >
+                        <span id="tos-message">By signing in, you agree to our</span>
+                        <a
+                            target="_blank"
+                            href="https://app.officeotter.com/tos"
+                            style="
+                                color: rgba(10, 88, 206, 0.8);
+                                text-decoration: none;
+                            "
+                        >
+                            Terms of Use
+                            <span>
+                                <img src="https://office-otter-production.s3.us-east-2.amazonaws.com/9d88f0b4-187c-456a-89cb-01c09ae0894fpopout.png" alt="popout icon" style="height: 10px; width: 10px">
+                            </span>
+                        </a>
+                    </h6>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
