@@ -9,34 +9,10 @@ exports.createTask = async (req, res, next) => {
     try {
         foundUser = await db.User.findById(userId)
 
-        if (req.body.requestedBy === 'MS-Teams-Ext' && req.body.labels) {
-            msLabelIds = await createLabels(req.body.labels, userId)
-        }
-
-        let labelIds = await createLabels(req.body.labels, userId)
-
-        if (msLabelIds) {
-            msLabelIds.forEach((labelId) => {
-                labelIds.push(labelId)
-            })
-        }
-
-        if (req.body.labels && req.body.requestedBy !== 'MS-Teams-Ext') {
-            req.body.labels.forEach((label) => {
-                labelIds.push(label._id)
-            })
-        }
-
         let task = await db.Task.create({
             ...req.body,
             user: userId,
-            labels: labelIds,
-            isCompleted: false,
         })
-
-        if (req.body.requestedBy === 'MS-Teams-Ext' && labelIds.length > 0) {
-            io.emit('newLabels', userId)
-        }
 
         task = await db.Task.findById(task._id)
             .populate({ path: 'labels' })
@@ -161,37 +137,26 @@ exports.getNumCompletedTasks = async (req, res, next) => {
 
 exports.updateTask = async (req, res, next) => {
     let userId = req.params.id
-    let user = await db.User.findById(userId)
-
+    console.log(req.body)
     try {
         console.log(`searching for task ${req.params.taskId}`)
 
-        let task = await db.Task.findById(req.params.taskId)
-
-        if (req.body.isCompleted === true) {
-            const user = await db.User.findById(req.params.id).populate('tasks')
-
-            const numOfCompletedTasks = user.tasks.filter(
-                (t) => t.isCompleted
-            ).length
-        }
-
-        if (req.body.due) {
-            task.due = req.body.due
-        }
-
-        task = await db.Task.findByIdAndUpdate(
-            req.params.taskId,
-            req.body
+        let task = await db.Task.findOneAndUpdate(
+            { id: req.params.taskId },
+            { ...req.body },
+            {
+                new: true,
+            }
         ).populate('labels checklist')
 
-        console.log(`found task and updated it`)
+        console.log(task)
 
         if (req.headers.referer === `${process.env.FRONTEND}/`) {
             io.emit('newTasksMicrosoft', userId)
         } else {
             io.emit('newTask', userId)
         }
+
         return res.status(200).json(task)
     } catch (err) {
         return next(err)

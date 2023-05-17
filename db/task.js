@@ -2,6 +2,10 @@ const mongoose = require('mongoose')
 const db = require('./index')
 
 const taskSchema = new mongoose.Schema({
+    id: {
+        type: String,
+        required: true,
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -12,14 +16,13 @@ const taskSchema = new mongoose.Schema({
         default: '',
     },
     notes: {
-        type: Array,
-        default: [],
+        type: String,
+        default: '',
     },
     checklist: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'ChecklistItem',
-            required: true,
             default: [],
         },
     ],
@@ -27,6 +30,7 @@ const taskSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Label',
+            default: [],
         },
     ],
     due: {
@@ -36,14 +40,15 @@ const taskSchema = new mongoose.Schema({
     createdDate: {
         type: Date,
         default: Date.now,
+        required: true,
     },
     completedDate: {
         type: Date,
+        default: null,
     },
     position: {
         type: Number,
         default: 0,
-        required: true,
     },
 })
 
