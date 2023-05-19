@@ -98,6 +98,66 @@ exports.signin = async (req, res, next) => {
     }
 }
 
+exports.signinMicrosoft = async (req, res, next) => {
+    const { email, password, msId, message, link } = req.body
+    const isTab = req.query.isTab
+
+    try {
+        // validate user
+        const foundUser = await db.User.findOne({
+            email: email.toLowerCase(),
+        }).select('+password')
+        const passwordsMatch = await foundUser.comparePassword(password)
+
+        if (!passwordsMatch) {
+            if (isTab) {
+                return res.status(200).json({ error: 'password' })
+            } else {
+                return res.redirect(
+                    encodeURI(
+                        `${process.env.BACKEND}/api/v1/msteams/signin?error=password&email=${email}&msUserId=${msId}&message=${message}&link=${link}`
+                    )
+                )
+            }
+        }
+
+        // create authToken
+        const { _id, name, notificationSettings } = foundUser
+        let token = jwt.sign(
+            { _id, email, name, notificationSettings },
+            process.env.SECRET_KEY
+        )
+
+        // grab msId, add it to the user, and redirect
+        await db.User.findByIdAndUpdate(foundUser._id, { microsoftId: msId })
+        if (isTab) {
+            return res.status(200).json({
+                name: foundUser.name,
+                email: foundUser.email,
+                profilePhotoUrl: foundUser.profilePhotoUrl,
+                token: token,
+                _id: foundUser._id,
+            })
+        } else {
+            return res.redirect(
+                encodeURI(
+                    `${process.env.BACKEND}/api/v1/msteams/taskcard/?token=${token}&ooUserId=${foundUser._id}&message=${message}&link=${link}&name=${foundUser.name}&email=${foundUser.email}`
+                )
+            )
+        }
+    } catch (error) {
+        if (isTab) {
+            return res.status(200).json({ error: 'email' })
+        } else {
+            return res.redirect(
+                encodeURI(
+                    `${process.env.BACKEND}/api/v1/msteams/signin?error=email&msUserId=${msId}&message=${message}&link=${link}`
+                )
+            )
+        }
+    }
+}
+
 exports.getJwtToken = (user) => {
     const { _id, name, email, notificationSettings } = user
     let token = jwt.sign({ _id, email, name }, process.env.SECRET_KEY)
