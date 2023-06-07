@@ -92,7 +92,7 @@ exports.getAllTasks = async (req, res, next) => {
                 path: 'labels checklist',
             },
         })
-        const tasks = user.tasks
+        const tasks = user.tasks.reverse()
 
         return res.status(200).json(tasks)
     } catch (err) {
