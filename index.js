@@ -15,6 +15,7 @@ const passwordRoutes = require('./routes/password')
 const checklistRoutes = require('./routes/checklist')
 const stripeRoutes = require('./routes/stripe')
 const msTeamsRoutes = require('./routes/microsoftTeams')
+const initializeSocket = require('./util/socket')
 
 const db = require('./db')
 const {
@@ -31,24 +32,15 @@ const {
 
 const format = require('date-fns/format')
 
-global.io = require('socket.io')(server)
-global.ioConnections = []
+// initialize socket
+global.io = require('socket.io')(server, {
+    cors: { origin: process.env.FRONTEND },
+})
+initializeSocket()
 
 app.use(cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
-
-io.on('connection', async (socket) => {
-    socket.on('connected', (userId) => {
-        ioConnections.push({ socket: socket.id, user: userId })
-    })
-
-    socket.on('disconnect', () => {
-        ioConnections = ioConnections.filter(
-            (connection) => connection.socket !== socket.id
-        )
-    })
-})
 
 //test
 app.use('/api/v1/stripe', stripeRoutes)
@@ -87,5 +79,3 @@ app.use(errorHandler)
 server.listen(port, () => {
     console.log('App is running on port ' + port)
 })
-
-module.exports.io = io
