@@ -8,7 +8,7 @@ exports.createTask = async (req, res, next) => {
 
     try {
         foundUser = await db.User.findById(userId)
-
+        console.log(req.body)
         let task = await db.Task.create({
             ...req.body,
             user: userId,
@@ -141,8 +141,8 @@ exports.updateTask = async (req, res, next) => {
     try {
         console.log(`searching for task ${req.params.taskId}`)
 
-        let task = await db.Task.findOneAndUpdate(
-            { id: req.params.taskId },
+        let task = await db.Task.findByIdAndUpdate(
+            req.params.taskId,
             { ...req.body },
             {
                 new: true,

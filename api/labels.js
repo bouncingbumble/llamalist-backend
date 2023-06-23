@@ -2,7 +2,8 @@ const db = require('../db')
 
 exports.createLabel = async (req, res, next) => {
     const userId = req.params.id
-    const labelToCreate = { ...req.body, user: userId }
+    const { name, taskId } = req.body
+    const labelToCreate = { name, user: userId }
 
     try {
         const labelWithSameName = await db.Label.find({
@@ -17,6 +18,9 @@ exports.createLabel = async (req, res, next) => {
         }
 
         const createdLabel = await db.Label.create(labelToCreate)
+        let task = await db.Task.findById(taskId)
+        task.labels = [...task.labels, createdLabel._id]
+        await task.save()
 
         if (req.headers.referer === `${process.env.FRONTEND}/`) {
             io.emit('newLabelsMicrosoft', userId)
