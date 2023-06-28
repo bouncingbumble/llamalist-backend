@@ -68,6 +68,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    hideSectionWelcomeMessages: {
+        type: Object,
+        default: {
+            all: false,
+            today: false,
+            upcoming: false,
+            someday: false,
+            inbox: false,
+        },
+    },
 })
 
 /**
