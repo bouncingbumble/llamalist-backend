@@ -92,7 +92,9 @@ exports.getAllTasks = async (req, res, next) => {
                 path: 'labels checklist',
             },
         })
-        const tasks = user.tasks.reverse()
+        const tasks = user.tasks
+            .filter((t) => t.completedDate === null)
+            .reverse()
 
         return res.status(200).json(tasks)
     } catch (err) {
