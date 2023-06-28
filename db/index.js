@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 // mongoose.set('debug', true)
 mongoose.Promise = Promise
 mongoose.connect(
-    `mongodb+srv://LlamaListAdmin:${process.env.MONGODB_ADMIN_PASSWORD}@llamalist.xc6lzwr.mongodb.net/?retryWrites=true&w=majority`,
+    `mongodb+srv://admin:${process.env.MONGODB_ADMIN_PASSWORD}@llamalist-db.nzpujkn.mongodb.net/?retryWrites=true&w=majority`,
     {
         keepAlive: true,
         useNewUrlParser: true,
