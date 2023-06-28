@@ -195,11 +195,8 @@ const createNewUser = async (userInfo) => {
 }
 
 const createAuthenticatedPayload = (user) => {
-    const { _id, email, name, notificationSettings } = user
+    const { _id, email, name, hideSectionWelcomeMessages } = user
     //create an authenticated session
-    let token = jwt.sign(
-        { _id, email, name, notificationSettings },
-        process.env.SECRET_KEY
-    )
-    return { token, _id }
+    let token = jwt.sign({ _id, email, name }, process.env.SECRET_KEY)
+    return { token, user }
 }
