@@ -13,4 +13,5 @@ mongoose.connect(
 module.exports.User = require('./user')
 module.exports.Task = require('./task')
 module.exports.Label = require('./label')
+module.exports.UserStats = require('./userStats')
 module.exports.ChecklistItem = require('./checklist')
