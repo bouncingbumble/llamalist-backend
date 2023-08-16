@@ -24,6 +24,8 @@ const {
     ensureAdmin,
 } = require('./middleware/auth')
 
+const { checkForGoalCompletion } = require('./middleware/gamification')
+
 const {
     slackIntegrated,
     incomingEmail,
@@ -60,7 +62,13 @@ app.use(
     ensureCorrectUser,
     checklistRoutes
 )
-app.use('/api/v1/users/:id/tasks', loginRequired, ensureCorrectUser, taskRoutes)
+app.use(
+    '/api/v1/users/:id/tasks',
+    loginRequired,
+    ensureCorrectUser,
+    checkForGoalCompletion,
+    taskRoutes
+)
 app.use('/api/v1/incomingEmail', incomingEmail)
 app.post('/sms', incomingSMS)
 app.use('/api/v1/msteams', msTeamsRoutes)
