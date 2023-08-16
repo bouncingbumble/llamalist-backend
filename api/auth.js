@@ -190,6 +190,7 @@ const createNewUser = async (userInfo) => {
     const newUser = await db.User.create(userInfo)
 
     await createFirstLabels(newUser._id)
+    await db.UserStats.create({ user: newUser._id })
 
     return newUser
 }
