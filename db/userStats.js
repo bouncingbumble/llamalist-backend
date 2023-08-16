@@ -10,17 +10,9 @@ const userStatsSchema = new mongoose.Schema({
         default: 0,
         type: Number,
     },
-    goalOneComplete: {
-        type: Boolean,
-        default: false,
-    },
-    goalTwoComplete: {
-        type: Boolean,
-        default: false,
-    },
-    goalThreeComplete: {
-        type: Boolean,
-        default: false,
+    areGoalsCompleted: {
+        default: [false, false, false],
+        type: Array,
     },
     currentStreakCount: {
         default: 0,

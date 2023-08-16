@@ -1,7 +1,6 @@
 const db = require('../db')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
-    console.log('running')
     try {
         const user = await db.User.findById(req.params.id).populate({
             path: 'tasks',
@@ -10,23 +9,49 @@ exports.checkForGoalCompletion = async (req, res, next) => {
             },
         })
 
-        const userLevel = 0
+        const userStats = await db.UserStats.findOne({ user: req.params.id })
 
-        console.log(user)
-
-        levels[userLevel].forEach((l) => {
-            console.log(user.tasks.length)
-            if (l.isCompleted(user)) {
-                console.log('completed!' + l.title)
-                //mark appropriate shit on users data schema
-                //emit event to frontend
-                io.emit('goal completed', {
-                    userId: req.params.id,
-                    level: userLevel,
-                    goal: l.title,
-                })
+        let isFirstTimeCompleted = [false, false, false]
+        let shouldAnimateLevel = false
+        //mark the corresponding goal as completed if the isCompleted function returns true
+        levels[userStats.level].forEach((goal, goalNum) => {
+            if (goal.isCompleted(user)) {
+                //if the goal was uncompleted before
+                if (!userStats.areGoalsCompleted[goalNum]) {
+                    //update goals with new values
+                    userStats.areGoalsCompleted =
+                        userStats.areGoalsCompleted.map((g, index) =>
+                            index === goalNum ? true : g
+                        )
+                    //update first time tracker
+                    isFirstTimeCompleted[goalNum] = true
+                    console.log(`user completed ${goal.title}`)
+                }
             }
         })
+
+        //if all the goals are completed, the user advances to the next level
+        if (userStats.areGoalsCompleted.every((v) => v === true)) {
+            userStats.level = userStats.level + 1
+            userStats.areGoalsCompleted = [false, false, false]
+            shouldAnimateLevel = true
+        }
+
+        //save the updated stats
+        await userStats.save()
+
+        //only emit if it's the first time the user has completed the goal
+        if (isFirstTimeCompleted.some((v) => v === true)) {
+            //emit event to frontend
+            console.log('emitting goal completed')
+            io.emit('goal completed', {
+                userId: req.params.id,
+                data: {
+                    shouldAnimateLevel,
+                    isFirstTimeCompleted,
+                },
+            })
+        }
 
         return next()
     } catch (error) {
@@ -44,13 +69,13 @@ const levels = [
         {
             title: 'Complete three tasks',
             isCompleted: () => {
-                return false
+                return true
             },
         },
         {
             title: 'Visit llama land',
             isCompleted: () => {
-                return false
+                return true
             },
         },
     ],
