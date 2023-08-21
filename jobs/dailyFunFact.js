@@ -1,7 +1,7 @@
 const db = require('../db')
 var CronJob = require('cron').CronJob
 
-const time = '* * * * *'
+const time = '0 5 * * *'
 
 exports.getDailyFunFact = async () => {
     const job = new CronJob(
