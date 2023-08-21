@@ -16,6 +16,11 @@ const checklistRoutes = require('./routes/checklist')
 const stripeRoutes = require('./routes/stripe')
 const msTeamsRoutes = require('./routes/microsoftTeams')
 const initializeSocket = require('./util/socket')
+const {
+    getDailyFunFact,
+    setCustomFunFact,
+    overrideCurrentFunFact,
+} = require('./jobs/dailyFunFact')
 
 const db = require('./db')
 const {
@@ -75,6 +80,12 @@ app.use('/api/v1/msteams', msTeamsRoutes)
 app.get('/signin/chromeext', (req, res) => {
     res.sendFile(__dirname + '/static/chrome/chromesignin.html')
 })
+app.get('/api/v1/users/:id/funfact', async (req, res) => {
+    const funFact = await db.FunFact.findOne()
+    res.status(200).json(funFact.funFact)
+})
+
+getDailyFunFact()
 
 app.use((req, res, next) => {
     let err = new Error('Not Found')
