@@ -82,7 +82,7 @@ app.get('/signin/chromeext', (req, res) => {
 })
 app.get('/api/v1/users/:id/funfact', async (req, res) => {
     const funFact = await db.FunFact.findOne()
-    res.status(200).json(funFact.funFact)
+    res.status(200).json(funFact)
 })
 
 getDailyFunFact()

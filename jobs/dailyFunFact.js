@@ -2,6 +2,8 @@ const db = require('../db')
 var CronJob = require('cron').CronJob
 
 const time = '0 5 * * *'
+const scribbleSpeed = 40
+const scribblePause = 500
 
 exports.getDailyFunFact = async () => {
     const job = new CronJob(
@@ -16,14 +18,19 @@ exports.getDailyFunFact = async () => {
                     newIndex = 0
                 }
                 const newFunFact = funFacts[newIndex]
+                const { sequence, duration } =
+                    getSequenceAndDuration(newFunFact)
 
                 funFact.index = newIndex
                 funFact.funFact = newFunFact
+                funFact.sequence = sequence
+                funFact.duration = duration
+                funFact.speed = scribbleSpeed
             } else {
                 funFact.isCustom = false
             }
             await funFact.save()
-            io.emit('new fun fact', { data: funFact.funFact })
+            io.emit('new fun fact', funFact)
         },
         null,
         true
@@ -34,18 +41,54 @@ exports.getDailyFunFact = async () => {
 exports.setCustomFunFact = async (customFact) => {
     const funFact = await db.FunFact.findOne()
 
+    const { sequence, duration } = getSequenceAndDuration(customFact)
+
     funFact.isCustom = true
     funFact.funFact = customFact
+    funFact.sequence = sequence
+    funFact.duration = duration
+    funFact.speed = scribbleSpeed
     await funFact.save()
 }
 
 exports.overrideCurrentFunFact = async (customFact) => {
     const funFact = await db.FunFact.findOne()
 
+    const { sequence, duration } = getSequenceAndDuration(customFact)
+
     funFact.funFact = customFact
+    funFact.sequence = sequence
+    funFact.duration = duration
+    funFact.speed = scribbleSpeed
     await funFact.save()
 
-    io.emit('new fun fact', { data: customFact })
+    io.emit('new fun fact', funFact)
+}
+
+const getSequenceAndDuration = (funFact) => {
+    const sequence = []
+
+    for (let index = 0; index < funFact.length; index++) {
+        const character = funFact.charAt(index)
+
+        if (
+            character === '?' ||
+            character === '.' ||
+            character === ',' ||
+            character === '!' ||
+            index === funFact.length - 1
+        ) {
+            const chunk = funFact.substring(0, index + 1)
+
+            sequence.push(chunk)
+            sequence.push(scribblePause)
+        }
+    }
+
+    const duration =
+        (scribblePause * sequence.length) / 2 + funFact.length * scribbleSpeed
+
+    return { sequence, duration }
 }
 
 const funFacts = [
