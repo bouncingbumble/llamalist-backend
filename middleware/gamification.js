@@ -64,18 +64,22 @@ const levels = [
     [
         {
             title: 'Add three tasks',
-            isCompleted: (user) => (user.tasks.length > 2 ? true : false),
+            isCompleted: (user) =>
+                user.tasks.filter((t) => t.name.length > 0).length > 2
+                    ? true
+                    : false,
         },
         {
             title: 'Complete three tasks',
-            isCompleted: () => {
-                return true
-            },
+            isCompleted: (user) =>
+                user.tasks.filter((t) => t.completedDate !== null).length > 2
+                    ? true
+                    : false,
         },
         {
             title: 'Visit llama land',
             isCompleted: () => {
-                return true
+                return false
             },
         },
     ],
@@ -83,7 +87,7 @@ const levels = [
         {
             title: 'Lorem ipsum dolor sit amet',
             isCompleted: () => {
-                return false
+                return true
             },
         },
         {
@@ -95,7 +99,7 @@ const levels = [
         {
             title: 'Lorem ipsum dolor sit amet consectetur.',
             isCompleted: () => {
-                return false
+                return true
             },
         },
     ],
