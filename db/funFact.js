@@ -13,6 +13,18 @@ const funFactSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    sequence: {
+        type: Array,
+        default: [],
+    },
+    speed: {
+        default: 40,
+        type: Number,
+    },
+    duration: {
+        type: Number,
+        default: 3000,
+    },
 })
 
 const funFact = mongoose.model('FunFact', funFactSchema)
