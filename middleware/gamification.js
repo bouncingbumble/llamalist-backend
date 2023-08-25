@@ -2,17 +2,21 @@ const db = require('../db')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
     try {
-        const user = await db.User.findById(req.params.id).populate({
+        let user = await db.User.findById(req.params.id).populate({
             path: 'tasks',
             populate: {
                 path: 'labels checklist',
             },
         })
 
-        const userStats = await db.UserStats.findOne({ user: req.params.id })
+        if (req.body.didVisitLlamaLand) {
+            user.didVisitLlamaLand = true
+        }
+
+        let userStats = await db.UserStats.findOne({ user: req.params.id })
 
         let isFirstTimeCompleted = [false, false, false]
-        let shouldAnimateLevel = false
+        let didCompleteLevel = false
         //mark the corresponding goal as completed if the isCompleted function returns true
         levels[userStats.level].forEach((goal, goalNum) => {
             if (goal.isCompleted(user)) {
@@ -34,7 +38,8 @@ exports.checkForGoalCompletion = async (req, res, next) => {
         if (userStats.areGoalsCompleted.every((v) => v === true)) {
             userStats.level = userStats.level + 1
             userStats.areGoalsCompleted = [false, false, false]
-            shouldAnimateLevel = true
+            await userStats.save()
+            didCompleteLevel = true
         }
 
         //save the updated stats
@@ -47,8 +52,8 @@ exports.checkForGoalCompletion = async (req, res, next) => {
             io.emit('goal completed', {
                 userId: req.params.id,
                 data: {
-                    shouldAnimateLevel,
                     isFirstTimeCompleted,
+                    didCompleteLevel,
                 },
             })
         }
@@ -78,8 +83,8 @@ const levels = [
         },
         {
             title: 'Visit llama land',
-            isCompleted: () => {
-                return false
+            isCompleted: (user) => {
+                return user.didVisitLlamaLand ? true : false
             },
         },
     ],
@@ -87,7 +92,7 @@ const levels = [
         {
             title: 'Lorem ipsum dolor sit amet',
             isCompleted: () => {
-                return true
+                return false
             },
         },
         {
@@ -99,7 +104,7 @@ const levels = [
         {
             title: 'Lorem ipsum dolor sit amet consectetur.',
             isCompleted: () => {
-                return true
+                return false
             },
         },
     ],

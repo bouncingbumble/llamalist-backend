@@ -11,6 +11,7 @@ const authRoutes = require('./routes/auth')
 const taskRoutes = require('./routes/tasks')
 const userRoutes = require('./routes/users')
 const labelRoutes = require('./routes/labels')
+const gamificationRoutes = require('./routes/gamification')
 const passwordRoutes = require('./routes/password')
 const checklistRoutes = require('./routes/checklist')
 const stripeRoutes = require('./routes/stripe')
@@ -74,6 +75,14 @@ app.use(
     checkForGoalCompletion,
     taskRoutes
 )
+app.use(
+    '/api/v1/users/:id/gamification',
+    loginRequired,
+    ensureCorrectUser,
+    checkForGoalCompletion,
+    gamificationRoutes
+)
+
 app.use('/api/v1/incomingEmail', incomingEmail)
 app.post('/sms', incomingSMS)
 app.use('/api/v1/msteams', msTeamsRoutes)
