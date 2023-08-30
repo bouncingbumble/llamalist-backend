@@ -3,71 +3,16 @@ const mongoose = require('mongoose')
 
 exports.createTask = async (req, res, next) => {
     let userId = req.params.id
-    let foundUser = {}
-    let msLabelIds = null
 
     try {
-        foundUser = await db.User.findById(userId)
-        console.log(req.body)
         let task = await db.Task.create({
             ...req.body,
             user: userId,
         })
 
-        task = await db.Task.findById(task._id)
-            .populate({ path: 'labels' })
-            .populate({ path: 'checklist' })
-
-        foundUser.tasks.push(task._id)
-
-        if (req.body.requestedBy === 'chrome-ext') {
-            foundUser.isChromeExtIntegrated = true
-
-            io.emit('newTask', userId)
-            io.emit('newTasksMicrosoft', userId)
-        } else if (req.body.requestedBy === 'MS-Teams-Ext') {
-            foundUser.isMicrosoftIntegrated = true
-
-            io.emit('newTask', userId)
-            io.emit('newTasksMicrosoft', userId)
-        } else if (req.body.requestedBy === 'MS-Teams-Tab') {
-            foundUser.isMicrosoftIntegrated = true
-
-            io.emit('newTask', userId)
-        } else if (req.body.requestedBy === 'MS-Outlook-Tab') {
-            foundUser.isMicrosoftIntegrated = true
-
-            io.emit('newTask', userId)
-        } else if (req.body.requestedBy === 'MS-Office-Tab') {
-            foundUser.isMicrosoftIntegrated = true
-
-            io.emit('newTask', userId)
-        } else {
-            io.emit('newTasksMicrosoft', userId)
-        }
-        await foundUser.save()
-
         return res.status(200).json(task)
     } catch (err) {
         console.log(err)
-        return next(err)
-    }
-}
-
-exports.getTask = async (req, res, next) => {
-    try {
-        let userWithTasks = await db.User.findById(req.params.id).populate({
-            path: 'tasks',
-            match: {
-                isCompleted: false,
-            },
-            populate: {
-                path: 'labels checklist',
-            },
-        })
-        const tasks = userWithTasks.tasks
-        return res.status(200).json(tasks.reverse())
-    } catch (err) {
         return next(err)
     }
 }
@@ -86,15 +31,11 @@ exports.getTaskById = async (req, res, next) => {
 
 exports.getAllTasks = async (req, res, next) => {
     try {
-        const user = await db.User.findById(req.params.id).populate({
-            path: 'tasks',
-            populate: {
-                path: 'labels checklist',
-            },
-        })
-        const tasks = user.tasks
-            .filter((t) => t.completedDate === null)
-            .reverse()
+        let tasks = await db.Task.find({ user: req.params.id }).populate(
+            'checklist labels'
+        )
+
+        tasks = tasks.filter((t) => t.completedDate === null).reverse()
 
         return res.status(200).json(tasks)
     } catch (err) {
@@ -124,25 +65,18 @@ exports.getCompletedTasks = async (req, res, next) => {
 
 exports.getNumCompletedTasks = async (req, res, next) => {
     try {
-        const userWithTasks = await db.User.findById(req.params.id).populate({
-            path: 'tasks',
-            match: {
-                isCompleted: true,
-            },
+        const tasks = await db.Task.find({ user: req.params.id }).match({
+            isCompleted: true,
         })
 
-        return res.status(200).json(userWithTasks.tasks.length)
+        return res.status(200).json(tasks.length)
     } catch (err) {
         return next(err)
     }
 }
 
 exports.updateTask = async (req, res, next) => {
-    let userId = req.params.id
-    console.log(req.body)
     try {
-        console.log(`searching for task ${req.params.taskId}`)
-
         let task = await db.Task.findByIdAndUpdate(
             req.params.taskId,
             { ...req.body },
@@ -150,14 +84,6 @@ exports.updateTask = async (req, res, next) => {
                 new: true,
             }
         ).populate('labels checklist')
-
-        console.log(task)
-
-        if (req.headers.referer === `${process.env.FRONTEND}/`) {
-            io.emit('newTasksMicrosoft', userId)
-        } else {
-            io.emit('newTask', userId)
-        }
 
         return res.status(200).json(task)
     } catch (err) {

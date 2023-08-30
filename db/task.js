@@ -3,8 +3,8 @@ const db = require('./index')
 
 const taskSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        type: String,
+        default: '',
         required: true,
     },
     isNewTask: {
@@ -65,17 +65,6 @@ taskSchema.pre('save', async function (next) {
     } else {
         return next()
     }
-})
-
-taskSchema.pre('deleteOne', async function () {
-    const task = await db.Task.findOne(this._conditions)
-    const userId = task.user
-    let user = await db.User.findById(userId)
-
-    user.tasks = user.tasks.filter(
-        (taskId) => taskId.toString() !== task._id.toString()
-    )
-    await user.save()
 })
 
 const Task = mongoose.model('Task', taskSchema)

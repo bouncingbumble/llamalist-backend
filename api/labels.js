@@ -49,37 +49,17 @@ exports.getLabels = async (req, res, next) => {
     const userId = req.params.id
 
     try {
-        let userWithTasks = await db.User.findById(userId).populate({
-            path: 'tasks',
-        })
+        let labels = await db.Label.find({ user: userId })
 
-        let usersLabels = await db.Label.find({ user: userId })
-        usersLabels = usersLabels.map((l) => l._id)
-        let tasks = userWithTasks.tasks
-        let ls = tasks.map((t) => t.labels)
-        ls = ls.flat()
-        ls = ls.concat(usersLabels)
-
-        var o = {}
-        ls.forEach((item) => {
-            item in o ? (o[item] += 1) : (o[item] = 1)
-        })
-
-        //put all ids in an array, sort by which ones appear the most
-        var sorted = Object.keys(o).sort((a, b) => o[a] < o[b])
-
-        let labels = await Promise.all(
-            sorted.map(async (s) => {
-                if (s.length > 0) {
-                    return await db.Label.findById(s)
-                }
-            })
-        )
         labels = labels.filter((x) => x !== undefined && x !== null)
 
         labels.sort((a, b) =>
             a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1
         )
+
+        if (labels.length === 0) {
+            labels = await createFirstLabels(userId)
+        }
 
         return res.status(200).json(labels)
     } catch (error) {
@@ -248,4 +228,25 @@ exports.swapLabel = async (req, res, next) => {
     } catch (error) {
         next(error)
     }
+}
+
+const createFirstLabels = async (userId) => {
+    const newLabels = await Promise.all([
+        db.Label.create({
+            name: 'personal',
+            user: userId,
+            color: '#fab6b2',
+        }),
+        db.Label.create({
+            name: 'work',
+            user: userId,
+            color: '#01b4c0',
+        }),
+        db.Label.create({
+            name: '🦙 llama list',
+            user: userId,
+            color: '#0a58ce',
+        }),
+    ])
+    return newLabels
 }
