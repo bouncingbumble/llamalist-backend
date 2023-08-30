@@ -1,7 +1,6 @@
 const db = require('../db')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
-    console.log('made it this far')
     try {
         let tasks = await db.Task.find({ user: req.params.id }).populate(
             'labels checklist'
