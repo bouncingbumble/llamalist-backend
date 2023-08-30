@@ -7,25 +7,6 @@ const db = require('../db')
 
 const { v4: uuid } = require('uuid')
 
-exports.slackIntegrated = async (req, res, next) => {
-    console.log(req.body)
-    const email = req.body.email
-    try {
-        const user = await db.User.findOne({
-            $or: [
-                { email: email.toLowerCase() },
-                { secondaryEmail: email.toLowerCase() },
-            ],
-        })
-        user.isSlackIntegrated = true
-        user.slackUserId = req.body.slackUserId
-        user.save()
-    } catch (error) {
-        next(error)
-    }
-    res.status(200).send()
-}
-
 exports.incomingEmail = async (req, res, next) => {
     console.log('recieved email')
     let email = req.body.headers.return_path.toLowerCase()

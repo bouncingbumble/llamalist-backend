@@ -49,32 +49,8 @@ exports.getLabels = async (req, res, next) => {
     const userId = req.params.id
 
     try {
-        let userWithTasks = await db.User.findById(userId).populate({
-            path: 'tasks',
-        })
+        let labels = await db.Label.find({ user: userId })
 
-        let usersLabels = await db.Label.find({ user: userId })
-        usersLabels = usersLabels.map((l) => l._id)
-        let tasks = userWithTasks.tasks
-        let ls = tasks.map((t) => t.labels)
-        ls = ls.flat()
-        ls = ls.concat(usersLabels)
-
-        var o = {}
-        ls.forEach((item) => {
-            item in o ? (o[item] += 1) : (o[item] = 1)
-        })
-
-        //put all ids in an array, sort by which ones appear the most
-        var sorted = Object.keys(o).sort((a, b) => o[a] < o[b])
-
-        let labels = await Promise.all(
-            sorted.map(async (s) => {
-                if (s.length > 0) {
-                    return await db.Label.findById(s)
-                }
-            })
-        )
         labels = labels.filter((x) => x !== undefined && x !== null)
 
         labels.sort((a, b) =>

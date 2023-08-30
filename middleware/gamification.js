@@ -1,25 +1,23 @@
 const db = require('../db')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
+    console.log('made it this far')
     try {
-        let user = await db.User.findById(req.params.id).populate({
-            path: 'tasks',
-            populate: {
-                path: 'labels checklist',
-            },
-        })
-
-        if (req.body.didVisitLlamaLand) {
-            user.didVisitLlamaLand = true
-        }
+        let tasks = await db.Task.find({ user: req.params.id }).populate(
+            'labels checklist'
+        )
 
         let userStats = await db.UserStats.findOne({ user: req.params.id })
+
+        if (req.body.didVisitLlamaLand) {
+            userStats.didVisitLlamaLand = true
+        }
 
         let isFirstTimeCompleted = [false, false, false]
         let didCompleteLevel = false
         //mark the corresponding goal as completed if the isCompleted function returns true
         levels[userStats.level].forEach((goal, goalNum) => {
-            if (goal.isCompleted(user)) {
+            if (goal.isCompleted(tasks, userStats)) {
                 //if the goal was uncompleted before
                 if (!userStats.areGoalsCompleted[goalNum]) {
                     //update goals with new values
@@ -69,22 +67,22 @@ const levels = [
     [
         {
             title: 'Add three tasks',
-            isCompleted: (user) =>
-                user.tasks.filter((t) => t.name.length > 0).length > 2
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.name.length > 0).length > 2
                     ? true
                     : false,
         },
         {
             title: 'Complete three tasks',
-            isCompleted: (user) =>
-                user.tasks.filter((t) => t.completedDate !== null).length > 2
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.completedDate !== null).length > 2
                     ? true
                     : false,
         },
         {
             title: 'Visit llama land',
-            isCompleted: (user) => {
-                return user.didVisitLlamaLand ? true : false
+            isCompleted: (tasks, userStats) => {
+                return userStats.didVisitLlamaLand
             },
         },
     ],

@@ -2,9 +2,9 @@ const mongoose = require('mongoose')
 
 const userStatsSchema = new mongoose.Schema({
     user: {
-        ref: 'User',
+        type: String,
+        default: '',
         required: true,
-        type: mongoose.Schema.Types.ObjectId,
     },
     level: {
         default: 0,
@@ -29,6 +29,10 @@ const userStatsSchema = new mongoose.Schema({
     easterEggsCount: {
         default: 0,
         type: Number,
+    },
+    didVisitLlamaLand: {
+        default: false,
+        type: Boolean,
     },
 })
 
