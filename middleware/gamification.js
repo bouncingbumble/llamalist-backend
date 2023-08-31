@@ -144,11 +144,45 @@ const checkStreak = async (req, userStats) => {
         })
 
         if (!doesDateAlreadyExist) {
-            userStats.currentStreak.push(date)
-            io.emit('streak incremented', {
-                userId: req.params.id,
-            })
+            //reset if it's been over a day since last activity
+            if (
+                userStats.currentStreak.length > 1 &&
+                !isYesterday(
+                    new Date(
+                        userStats.currentStreak[
+                            userStats.currentStreak.length - 1
+                        ]
+                    )
+                )
+            ) {
+                userStats.currentStreak = []
+                await userStats.save()
+            } else {
+                userStats.currentStreak.push(date)
+                await userStats.save()
+                io.emit('streak incremented', {
+                    userId: req.params.id,
+                })
+            }
         }
     }
     return userStats
+}
+
+function isYesterday(date) {
+    if (!(date instanceof Date)) {
+        console.log(
+            new Error('Invalid argument: you must provide a "date" instance')
+        )
+    }
+
+    let yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    yesterday = new Date(yesterday.setHours(0, 0, 0, 0))
+
+    return (
+        date.getDate() === yesterday.getDate() &&
+        date.getMonth() === yesterday.getMonth() &&
+        date.getFullYear() === yesterday.getFullYear()
+    )
 }
