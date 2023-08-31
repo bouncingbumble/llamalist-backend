@@ -14,9 +14,9 @@ const userStatsSchema = new mongoose.Schema({
         default: [false, false, false],
         type: Array,
     },
-    currentStreakCount: {
-        default: 0,
-        type: Number,
+    currentStreak: {
+        default: [],
+        type: Array,
     },
     highestStreakCount: {
         default: 0,

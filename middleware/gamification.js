@@ -8,6 +8,8 @@ exports.checkForGoalCompletion = async (req, res, next) => {
 
         let userStats = await db.UserStats.findOne({ user: req.params.id })
 
+        userStats = await checkStreak(req, userStats)
+
         if (req.body.didVisitLlamaLand) {
             userStats.didVisitLlamaLand = true
         }
@@ -126,3 +128,27 @@ const levels = [
         },
     ],
 ]
+
+const checkStreak = async (req, userStats) => {
+    if (req.get('llamaDate') !== undefined) {
+        let date = new Date(req.get('llamaDate'))
+
+        date = new Date(date.setHours(0, 0, 0, 0))
+
+        //had to do jank comparison because of bullshit date strings
+        let doesDateAlreadyExist = false
+        userStats.currentStreak.map((d) => {
+            if (d.toString() == date.toString()) {
+                doesDateAlreadyExist = true
+            }
+        })
+
+        if (!doesDateAlreadyExist) {
+            userStats.currentStreak.push(date)
+            io.emit('streak incremented', {
+                userId: req.params.id,
+            })
+        }
+    }
+    return userStats
+}
