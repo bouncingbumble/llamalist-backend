@@ -38,6 +38,10 @@ const userStatsSchema = new mongoose.Schema({
         default: 0,
         type: Number,
     },
+    llamaFeedings: {
+        default: [],
+        type: Array,
+    },
 })
 
 const userStats = mongoose.model('UserStats', userStatsSchema)

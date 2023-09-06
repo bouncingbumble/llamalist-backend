@@ -28,6 +28,7 @@ exports.checkForGoalCompletion = async (req, res, next) => {
                         )
                     //update first time tracker
                     isFirstTimeCompleted[goalNum] = true
+                    userStats.applesCount = userStats.applesCount + 1
                     console.log(`user completed ${goal.title}`)
                 }
             }
@@ -36,6 +37,7 @@ exports.checkForGoalCompletion = async (req, res, next) => {
         //if all the goals are completed, the user advances to the next level
         if (userStats.areGoalsCompleted.every((v) => v === true)) {
             userStats.level = userStats.level + 1
+            userStats.applesCount = userStats.applesCount + 5
             userStats.areGoalsCompleted = [false, false, false]
             await userStats.save()
             didCompleteLevel = true
@@ -53,6 +55,7 @@ exports.checkForGoalCompletion = async (req, res, next) => {
                 data: {
                     isFirstTimeCompleted,
                     didCompleteLevel,
+                    applesCount: userStats.applesCount,
                 },
             })
         }

@@ -85,6 +85,18 @@ exports.updateTask = async (req, res, next) => {
             }
         ).populate('labels checklist')
 
+        if (req.body.completedDate) {
+            let userStats = await db.UserStats.findOne({ user: req.params.id })
+            userStats.applesCount = userStats.applesCount + 1
+            await userStats.save()
+            io.emit('apples acquired', {
+                userId: req.params.id,
+                data: {
+                    applesCount: userStats.applesCount,
+                },
+            })
+        }
+
         return res.status(200).json(task)
     } catch (err) {
         return next(err)

@@ -17,12 +17,23 @@ exports.getUserStats = async (req, res, next) => {
 
 exports.updateUserStats = async (req, res, next) => {
     const user = req.params.id
+
+    //weird behavior with saving array of streak dates so we remove,
+
+    delete req.body.currentStreak
+
     try {
-        const updatedStats = await db.UserStats.findOneAndUpdate(
+        let updatedStats = await db.UserStats.findOneAndUpdate(
             { user },
             { ...req.body },
             { new: true }
         )
+
+        if (req.body.fedLlama) {
+            updatedStats.llamaFeedings.push(new Date())
+            await updatedStats.save()
+        }
+
         return res.status(200).json(updatedStats)
     } catch (err) {
         return next(err)
