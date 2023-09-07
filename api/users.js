@@ -1,4 +1,5 @@
 const db = require('../db')
+const clerk = require('@clerk/clerk-sdk-node')
 
 exports.getUserStats = async (req, res, next) => {
     const user = req.params.id
@@ -35,6 +36,26 @@ exports.updateUserStats = async (req, res, next) => {
         }
 
         return res.status(200).json(updatedStats)
+    } catch (err) {
+        return next(err)
+    }
+}
+
+exports.getUserOAuthTokens = async (req, res, next) => {
+    const userId = req.params.id
+    try {
+        let token
+        const googleTokens = await clerk.users.getUserOauthAccessToken(
+            userId,
+            'oauth_google'
+        )
+        if (googleTokens) {
+            token = googleTokens[0]
+        } else {
+            // eventually we will make requests for microsoft and apple here as well
+        }
+
+        return res.status(200).json(token)
     } catch (err) {
         return next(err)
     }
