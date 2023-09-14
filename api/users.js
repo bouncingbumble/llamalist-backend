@@ -20,7 +20,7 @@ exports.updateUserStats = async (req, res, next) => {
 
     //weird behavior with saving array of streak dates so we remove,
 
-    delete req.body.currentStreak
+    delete req.body.daysLoggedIn
 
     try {
         let updatedStats = await db.UserStats.findOneAndUpdate(

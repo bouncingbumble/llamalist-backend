@@ -14,13 +14,9 @@ const userStatsSchema = new mongoose.Schema({
         default: [false, false, false],
         type: Array,
     },
-    currentStreak: {
+    daysLoggedIn: {
         default: [],
         type: Array,
-    },
-    highestStreakCount: {
-        default: 0,
-        type: Number,
     },
     applesCount: {
         default: 0,
