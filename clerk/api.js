@@ -9,6 +9,6 @@ exports.getUser = async (userId) => {
         const res = await axios.get(`https://api.clerk.com/v1/users/${userId}`)
         return res.data
     } catch (error) {
-        next(error)
+        return error
     }
 }

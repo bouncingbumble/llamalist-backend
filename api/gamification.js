@@ -4,6 +4,7 @@ var previousMonday = require('date-fns/previousMonday')
 var addDays = require('date-fns/addDays')
 const clerk = require('@clerk/clerk-sdk-node')
 const { getUser } = require('../clerk/api')
+
 exports.completedGoal = async (req, res, next) => {
     try {
         return res.sendStatus(200)
@@ -12,10 +13,11 @@ exports.completedGoal = async (req, res, next) => {
     }
 }
 
-exports.getUsersWhoCompleted7DayStreakLastWeek = async (req, res, next) => {
+exports.getLeaderBoards = async (req, res, next) => {
     try {
         let userStats = await db.UserStats.find()
 
+        //get users who completed 7 day streak last week
         const startOfLastWeek = previousMonday(previousMonday(new Date()))
         let previousWeeksDays = [
             startOfLastWeek,
@@ -53,14 +55,65 @@ exports.getUsersWhoCompleted7DayStreakLastWeek = async (req, res, next) => {
             }
         })
 
-        let winningUsersNames = []
+        let sevenDayStreakWinners = []
         for await (let userId of winningUsers) {
             let user = await getUser(userId)
-            winningUsersNames.push(user.first_name + ' ' + user.last_name)
+            sevenDayStreakWinners.push(user.first_name + ' ' + user.last_name)
         }
 
-        return res.status(200).json(winningUsersNames)
+        //get longest streaks
+        userStats.sort((a, b) => b.highestStreakCount - a.highestStreakCount)
+        const highestStreakCounts = userStats.slice(0, 25)
+
+        let highestStreakCountWinners = []
+        for await (let stats of highestStreakCounts) {
+            let user = await getUser(stats.user)
+            highestStreakCountWinners.push({
+                name: user.first_name + ' ' + user.last_name,
+                highestStreakCount: stats.highestStreakCount,
+            })
+        }
+
+        //get llama game high score
+        userStats.sort((a, b) => b.llamaLandHighScore - a.llamaLandHighScore)
+        const highestLlamaLandScores = userStats.slice(0, 25)
+
+        let highestLlamaLandScoreWinners = []
+        for await (let stats of highestLlamaLandScores) {
+            let user = await getUser(stats.user)
+            highestLlamaLandScoreWinners.push({
+                name: user.first_name + ' ' + user.last_name,
+                llamaLandHighScore: stats.llamaLandHighScore,
+            })
+        }
+
+        return res.status(200).json({
+            sevenDayStreakWinners,
+            highestStreakCountWinners,
+            highestLlamaLandScoreWinners,
+        })
     } catch (e) {
-        next(e)
+        console.log(e)
+    }
+}
+
+exports.updateHighestStreak = async (req, res, next) => {
+    const user = req.params.id
+
+    //weird behavior with saving array of streak dates so we remove,
+
+    delete req.body.daysLoggedIn
+
+    try {
+        let userStats = await db.UserStats.findOne({ user })
+
+        if (req.body.highestStreakCount > userStats.highestStreakCount) {
+            userStats.highestStreakCount = req.body.highestStreakCount
+            await userStats.save()
+        }
+
+        return res.status(200).json(userStats)
+    } catch (err) {
+        return next(err)
     }
 }

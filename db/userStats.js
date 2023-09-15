@@ -18,6 +18,10 @@ const userStatsSchema = new mongoose.Schema({
         default: [],
         type: Array,
     },
+    highestStreakCount: {
+        default: 1,
+        type: Number,
+    },
     applesCount: {
         default: 0,
         type: Number,

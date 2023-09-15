@@ -2,10 +2,12 @@ const express = require('express')
 const router = express.Router({ mergeParams: true })
 const {
     completedGoal,
-    getUsersWhoCompleted7DayStreakLastWeek,
+    getLeaderBoards,
+    updateHighestStreak,
 } = require('../api/gamification')
 
 router.route('').post(completedGoal)
-router.route('/7dayStreak').get(getUsersWhoCompleted7DayStreakLastWeek)
+router.route('/leaderboards').get(getLeaderBoards)
+router.route('/updateHighestStreak').put(updateHighestStreak)
 
 module.exports = router
