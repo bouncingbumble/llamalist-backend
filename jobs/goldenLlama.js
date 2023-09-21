@@ -1,7 +1,7 @@
 const db = require('../db')
 var CronJob = require('cron').CronJob
 
-const time = '* * * * *'
+const time = '0 5 * * 0'
 
 exports.setGoldenLlamaLocation = async () => {
     const job = new CronJob(
@@ -16,10 +16,10 @@ exports.setGoldenLlamaLocation = async () => {
             const llama = await db.Llama.findOne()
 
             // make sure we don't get repeat locations
-            // while (!newIndex || newIndex === llama.goldenLlamaIndex) {
-            //     newIndex = Math.floor(Math.random() * 17)
-            // }
-            newIndex = llama.goldenLlamaIndex + 1
+            while (!newIndex || newIndex === llama.goldenLlamaIndex) {
+                newIndex = Math.floor(Math.random() * 17)
+            }
+
             llama.goldenLlamaIndex = newIndex
             llama.previousGoldenLlamaUpdate = llama.lastGoldenLlamaUpdate
             llama.lastGoldenLlamaUpdate = today
