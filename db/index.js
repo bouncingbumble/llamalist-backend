@@ -11,7 +11,7 @@ mongoose.connect(
 
 module.exports.Task = require('./task')
 module.exports.Label = require('./label')
-module.exports.FunFact = require('./funFact')
+module.exports.Llama = require('./llama')
 module.exports.UserStats = require('./userStats')
 module.exports.ChecklistItem = require('./checklist')
 module.exports.UserSettings = require('./userSettings')

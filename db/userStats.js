@@ -26,9 +26,9 @@ const userStatsSchema = new mongoose.Schema({
         default: 0,
         type: Number,
     },
-    easterEggsCount: {
-        default: 0,
-        type: Number,
+    goldenLlamasFound: {
+        default: [],
+        type: Array,
     },
     didVisitLlamaLand: {
         default: false,
