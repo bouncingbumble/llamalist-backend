@@ -56,7 +56,7 @@ app.get('/api/v1/users/:id/llama', async (req, res) => {
 })
 
 setDailyFunFact()
-// setGoldenLlamaLocation()
+setGoldenLlamaLocation()
 
 app.use((req, res, next) => {
     let err = new Error('Not Found')
