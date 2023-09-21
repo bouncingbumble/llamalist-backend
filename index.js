@@ -15,10 +15,11 @@ const gamificationRoutes = require('./routes/gamification')
 const checklistRoutes = require('./routes/checklist')
 const initializeSocket = require('./util/socket')
 const {
-    getDailyFunFact,
+    setDailyFunFact,
     setCustomFunFact,
     overrideCurrentFunFact,
 } = require('./jobs/dailyFunFact')
+const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
@@ -49,12 +50,13 @@ app.use(
     gamificationRoutes
 )
 
-app.get('/api/v1/users/:id/funfact', async (req, res) => {
-    const funFact = await db.FunFact.findOne()
-    res.status(200).json(funFact)
+app.get('/api/v1/users/:id/llama', async (req, res) => {
+    const llama = await db.Llama.findOne()
+    res.status(200).json(llama)
 })
 
-getDailyFunFact()
+setDailyFunFact()
+// setGoldenLlamaLocation()
 
 app.use((req, res, next) => {
     let err = new Error('Not Found')

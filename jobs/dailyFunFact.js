@@ -5,32 +5,36 @@ const time = '0 5 * * *'
 const scribbleSpeed = 40
 const scribblePause = 500
 
-exports.getDailyFunFact = async () => {
+exports.setDailyFunFact = async () => {
     const job = new CronJob(
         time,
         async () => {
             console.log('running daily fun fact job at: ' + new Date())
-            const funFact = await db.FunFact.findOne()
+            const llama = await db.Llama.findOne()
 
-            if (!funFact.isCustom) {
-                let newIndex = funFact.index + 1
-                if (funFact.index >= funFacts.length - 1) {
+            if (!llama.isCustomFunFact) {
+                let newIndex = llama.funFactIndex + 1
+                if (llama.funFactIndex >= funFacts.length - 1) {
                     newIndex = 0
                 }
                 const newFunFact = funFacts[newIndex]
                 const { sequence, duration } =
                     getSequenceAndDuration(newFunFact)
 
-                funFact.index = newIndex
-                funFact.funFact = newFunFact
-                funFact.sequence = sequence
-                funFact.duration = duration
-                funFact.speed = scribbleSpeed
+                llama.funFactIndex = newIndex
+                llama.funFactText = newFunFact
+                llama.funFactSequence = sequence
+                llama.funFactDuration = duration
+                llama.funFactSpeed = scribbleSpeed
             } else {
-                funFact.isCustom = false
+                llama.isCustomFunFact = false
             }
-            await funFact.save()
-            io.emit('new fun fact', funFact)
+            await llama.save()
+            io.emit('new fun fact', {
+                speed: scribbleSpeed,
+                sequence: llama.funFactSequence,
+                duration: llama.funFactDuration,
+            })
         },
         null,
         true
@@ -39,30 +43,34 @@ exports.getDailyFunFact = async () => {
 }
 
 exports.setCustomFunFact = async (customFact) => {
-    const funFact = await db.FunFact.findOne()
+    const llama = await db.Llama.findOne()
 
     const { sequence, duration } = getSequenceAndDuration(customFact)
 
-    funFact.isCustom = true
-    funFact.funFact = customFact
-    funFact.sequence = sequence
-    funFact.duration = duration
-    funFact.speed = scribbleSpeed
-    await funFact.save()
+    llama.isCustomFunFact = true
+    llama.funFactText = customFact
+    llama.funFactSequence = sequence
+    llama.funFactDuration = duration
+    llama.funFactSpeed = scribbleSpeed
+    await llama.save()
 }
 
 exports.overrideCurrentFunFact = async (customFact) => {
-    const funFact = await db.FunFact.findOne()
+    const llama = await db.Llama.findOne()
 
     const { sequence, duration } = getSequenceAndDuration(customFact)
 
-    funFact.funFact = customFact
-    funFact.sequence = sequence
-    funFact.duration = duration
-    funFact.speed = scribbleSpeed
-    await funFact.save()
+    llama.funFactText = customFact
+    llama.funFactSequence = sequence
+    llama.funFactDuration = duration
+    llama.funFactSpeed = scribbleSpeed
+    await llama.save()
 
-    io.emit('new fun fact', funFact)
+    io.emit('new fun fact', {
+        sequence,
+        duration,
+        speed: scribbleSpeed,
+    })
 }
 
 const getSequenceAndDuration = (funFact) => {
