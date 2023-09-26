@@ -88,7 +88,9 @@ exports.getLeaderBoards = async (req, res, next) => {
         }
 
         //get llamas found
-        userStats.sort((a, b) => b.goldenLlamasFound - a.goldenLlamasFound)
+        userStats.sort(
+            (a, b) => b.goldenLlamasFound.length - a.goldenLlamasFound.length
+        )
         const mostLlamasFound = userStats.slice(0, 9)
 
         let mostLlamasFoundUsers = []
