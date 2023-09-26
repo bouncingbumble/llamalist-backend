@@ -1,6 +1,7 @@
 const db = require('../db')
 const mongoose = require('mongoose')
 var previousMonday = require('date-fns/previousMonday')
+var previousSunday = require('date-fns/previousMonday')
 var addDays = require('date-fns/addDays')
 const clerk = require('@clerk/clerk-sdk-node')
 const { getUser } = require('../clerk/api')
@@ -102,14 +103,36 @@ exports.getLeaderBoards = async (req, res, next) => {
             })
         }
 
-        setTimeout(() => {
-            return res.status(200).json({
-                sevenDayStreakWinners,
-                highestStreakCountWinners,
-                highestLlamaLandScoreWinners,
-                mostLlamasFoundUsers,
-            })
-        }, 0)
+        //get users who completed 7 day streak last week
+        const startOfThisWeek = previousSunday(new Date())
+
+        let usersWhoFoundLlamaThisWeek = []
+
+        userStats.map((stats) => {
+            let mostRecentFindDate = stats.goldenLlamasFound.at(-1)
+            if (mostRecentFindDate) {
+                mostRecentFindDate = new Date(mostRecentFindDate)
+                if (mostRecentFindDate > startOfThisWeek) {
+                    usersWhoFoundLlamaThisWeek.push(stats.user)
+                }
+            }
+        })
+
+        let usersWhoFoundLlamaThisWeekWinners = []
+        for await (let userId of usersWhoFoundLlamaThisWeek) {
+            let user = await getUser(userId)
+            usersWhoFoundLlamaThisWeekWinners.push(
+                user.first_name + ' ' + user.last_name
+            )
+        }
+
+        return res.status(200).json({
+            sevenDayStreakWinners,
+            highestStreakCountWinners,
+            highestLlamaLandScoreWinners,
+            mostLlamasFoundUsers,
+            usersWhoFoundLlamaThisWeekWinners,
+        })
     } catch (e) {
         console.log(e)
     }
