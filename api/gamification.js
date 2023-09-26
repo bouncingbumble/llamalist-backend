@@ -63,7 +63,7 @@ exports.getLeaderBoards = async (req, res, next) => {
 
         //get longest streaks
         userStats.sort((a, b) => b.highestStreakCount - a.highestStreakCount)
-        const highestStreakCounts = userStats.slice(0, 25)
+        const highestStreakCounts = userStats.slice(0, 9)
 
         let highestStreakCountWinners = []
         for await (let stats of highestStreakCounts) {
@@ -76,7 +76,7 @@ exports.getLeaderBoards = async (req, res, next) => {
 
         //get llama game high score
         userStats.sort((a, b) => b.llamaLandHighScore - a.llamaLandHighScore)
-        const highestLlamaLandScores = userStats.slice(0, 25)
+        const highestLlamaLandScores = userStats.slice(0, 9)
 
         let highestLlamaLandScoreWinners = []
         for await (let stats of highestLlamaLandScores) {
@@ -87,11 +87,27 @@ exports.getLeaderBoards = async (req, res, next) => {
             })
         }
 
-        return res.status(200).json({
-            sevenDayStreakWinners,
-            highestStreakCountWinners,
-            highestLlamaLandScoreWinners,
-        })
+        //get llamas found
+        userStats.sort((a, b) => b.goldenLlamasFound - a.goldenLlamasFound)
+        const mostLlamasFound = userStats.slice(0, 9)
+
+        let mostLlamasFoundUsers = []
+        for await (let stats of mostLlamasFound) {
+            let user = await getUser(stats.user)
+            mostLlamasFoundUsers.push({
+                name: user.first_name + ' ' + user.last_name,
+                goldenLlamasFound: stats.goldenLlamasFound,
+            })
+        }
+
+        setTimeout(() => {
+            return res.status(200).json({
+                sevenDayStreakWinners,
+                highestStreakCountWinners,
+                highestLlamaLandScoreWinners,
+                mostLlamasFoundUsers,
+            })
+        }, 0)
     } catch (e) {
         console.log(e)
     }
