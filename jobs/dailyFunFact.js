@@ -122,7 +122,7 @@ const funFacts = [
     "Llamas are very smart, but we haven't invented AC yet. So we travel to high altitudes to beat the heat!",
     'A baby llama is called a cria. Just like humans, mothers bond with their babies through nuzzling, cuddling, and nose to nose contact',
     'We llamas practice good hygiene. We even have a designated bathroom area!',
-    'Llamas can be picky. Did you know we have a split upper lip to help us select the tastiest treats and avoid food we don\t like?',
+    "Llamas can be picky. Did you know we have a split upper lip to help us select the tastiest treats and avoid food we don't like?",
     "Putting off mowing your lawn? Llamas make for great lawn mowers. We chew on grass from the midpoint of the leaf blade instead of ripping it out from the root. It's a great way to take care of those pesky chores and keep me fed!",
     "Despite being very social animals, we also love our personal space. Don't forget to take some time to yourself and recharge",
     'From the tropcis to high altitude mountain ranges, llamas can survive in any climate. All we need is food, space, and good company',
