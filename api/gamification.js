@@ -4,7 +4,7 @@ var previousMonday = require('date-fns/previousMonday')
 var previousSunday = require('date-fns/previousMonday')
 var addDays = require('date-fns/addDays')
 const clerk = require('@clerk/clerk-sdk-node')
-const { getUser } = require('../clerk/api')
+const { getUser, getUsers } = require('../clerk/api')
 
 exports.completedGoal = async (req, res, next) => {
     try {
@@ -126,12 +126,39 @@ exports.getLeaderBoards = async (req, res, next) => {
             )
         }
 
+        //get users who have most tasks comppleted
+        let usersAccounts = await getUsers()
+        usersAccounts = usersAccounts.map((u) => {
+            return { userId: u.id, numTasks: 0 }
+        })
+
+        for await (let u of usersAccounts) {
+            let tasks = await db.Task.find({
+                user: u.userId,
+                completedDate: { $ne: null },
+            })
+            u.numTasks = tasks.length
+        }
+
+        usersAccounts.sort((a, b) => b.numTasks - a.numTasks)
+
+        const mostTasksFound = usersAccounts.slice(0, 9)
+        let mostTasksUsers = []
+        for await (let user of mostTasksFound) {
+            let u = await getUser(user.userId)
+            mostTasksUsers.push({
+                name: u.first_name + ' ' + u.last_name,
+                numTasks: user.numTasks,
+            })
+        }
+
         return res.status(200).json({
             sevenDayStreakWinners,
             highestStreakCountWinners,
             highestLlamaLandScoreWinners,
             mostLlamasFoundUsers,
             usersWhoFoundLlamaThisWeekWinners,
+            mostTasksUsers,
         })
     } catch (e) {
         console.log(e)

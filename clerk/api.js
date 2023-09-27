@@ -12,3 +12,12 @@ exports.getUser = async (userId) => {
         return error
     }
 }
+
+exports.getUsers = async () => {
+    try {
+        const res = await axios.get(`https://api.clerk.com/v1/users`)
+        return res.data
+    } catch (error) {
+        return error
+    }
+}
