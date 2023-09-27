@@ -129,7 +129,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         //get users who have most tasks comppleted
         let usersAccounts = await getUsers()
         usersAccounts = usersAccounts.map((u) => {
-            return { userId: u.id, numTasks: 0 }
+            return { userId: u.id, numTasks: 0, numTasksCompletedLastWeek: 0 }
         })
 
         for await (let u of usersAccounts) {
@@ -138,17 +138,47 @@ exports.getLeaderBoards = async (req, res, next) => {
                 completedDate: { $ne: null },
             })
             u.numTasks = tasks.length
+            tasks.forEach((t) => {
+                if (
+                    new Date(t.completedDate) > startOfLastWeek &&
+                    new Date(t.completedDate) < startOfThisWeek
+                ) {
+                    u.numTasksCompletedLastWeek =
+                        u.numTasksCompletedLastWeek + 1
+                }
+            })
+        }
+
+        let userAccounts2 = usersAccounts
+
+        userAccounts2 = userAccounts2.map((u) => {
+            if (u.numTasksCompletedLastWeek > 9) {
+                return u
+            }
+        })
+
+        userAccounts2 = userAccounts2.filter((item) => item !== undefined)
+
+        userAccounts2.sort(
+            (a, b) => b.numTasksCompletedLastWeek - a.numTasksCompletedLastWeek
+        )
+
+        for await (let user of userAccounts2) {
+            let u = await getUser(user.userId)
+            user.name = u.first_name + ' ' + u.last_name
         }
 
         usersAccounts.sort((a, b) => b.numTasks - a.numTasks)
 
         const mostTasksFound = usersAccounts.slice(0, 9)
         let mostTasksUsers = []
+
         for await (let user of mostTasksFound) {
             let u = await getUser(user.userId)
             mostTasksUsers.push({
                 name: u.first_name + ' ' + u.last_name,
                 numTasks: user.numTasks,
+                numTasksCompletedLastWeek: user.numTasksCompletedLastWeek,
             })
         }
 
@@ -159,6 +189,7 @@ exports.getLeaderBoards = async (req, res, next) => {
             mostLlamasFoundUsers,
             usersWhoFoundLlamaThisWeekWinners,
             mostTasksUsers,
+            userAccounts2,
         })
     } catch (e) {
         console.log(e)
