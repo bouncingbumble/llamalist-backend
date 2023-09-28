@@ -1,5 +1,15 @@
-const { getDay } = require('date-fns')
 const db = require('../db')
+const {
+    isFriday,
+    isMonday,
+    isSaturday,
+    isSunday,
+    isThursday,
+    isTuesday,
+    isWednesday,
+    isThisWeek,
+    differenceInDays,
+} = require('date-fns')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
     try {
@@ -8,8 +18,6 @@ exports.checkForGoalCompletion = async (req, res, next) => {
         )
 
         let userStats = await db.UserStats.findOne({ user: req.params.id })
-
-        userStats = await checkStreak(req, userStats)
 
         if (req.body.didVisitLlamaLand) {
             userStats.didVisitLlamaLand = true
@@ -133,12 +141,9 @@ const levels = [
     ],
 ]
 
-const checkStreak = async (req, userStats) => {
-    if (req.get('llamaDate') !== undefined) {
-        let date = new Date(req.get('llamaDate'))
-
-        date = new Date(date.setHours(0, 0, 0, 0))
-
+exports.checkStreak = async (userStats) => {
+    try {
+        let date = new Date()
         let oldLength = userStats.daysLoggedIn.length
 
         userStats.daysLoggedIn.push(date)
@@ -160,7 +165,7 @@ const checkStreak = async (req, userStats) => {
 
         if (newLength > oldLength) {
             io.emit('streak incremented', {
-                userId: req.params.id,
+                userId: userStats.user,
             })
 
             let dayOfWeek = date.getDay()
@@ -169,19 +174,69 @@ const checkStreak = async (req, userStats) => {
                 dayOfWeek = 6
             }
 
-            let fibNums = [1, 2, 3, 5, 8, 13, 21]
-            let userStats = await db.UserStats.findOne({
-                user: req.params.id,
-            })
+            let fibNums = [5, 10, 15, 20, 25, 30, 50]
             userStats.applesCount = userStats.applesCount + fibNums[dayOfWeek]
-            await userStats.save()
-            io.emit('apples acquired', {
-                userId: req.params.id,
-                data: {
-                    applesCount: userStats.applesCount,
-                },
-            })
         }
+
+        let currentStreak = 1
+        let daysOfWeekCompleted = new Array(7).fill(false)
+
+        let reversed = userStats.daysLoggedIn
+        reversed.reverse()
+        //loop through dates
+        for (let i = 0; i < reversed.length - 1; i++) {
+            if (
+                isThisWeek(new Date(reversed[i]), {
+                    weekStartsOn: 1,
+                })
+            ) {
+                if (isMonday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[0] = true
+                }
+                if (isTuesday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[1] = true
+                }
+                if (isWednesday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[2] = true
+                }
+                if (isThursday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[3] = true
+                }
+                if (isFriday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[4] = true
+                }
+                if (isSaturday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[5] = true
+                }
+                if (isSunday(new Date(reversed[i]))) {
+                    daysOfWeekCompleted[6] = true
+                }
+            }
+
+            if (
+                differenceInDays(
+                    new Date(reversed[i]),
+                    new Date(reversed[i + 1])
+                ) <= 1
+            ) {
+                ++currentStreak
+            } else {
+                break
+            }
+        }
+        userStats.currentStreak = currentStreak
+        userStats.daysOfWeekCompleted = daysOfWeekCompleted
+        await userStats.save()
+        io.emit('apples acquired', {
+            userId: userStats.user,
+            data: {
+                applesCount: userStats.applesCount,
+            },
+        })
+
+        return
+    } catch (error) {
+        console.log(error)
+        return
     }
-    return userStats
 }

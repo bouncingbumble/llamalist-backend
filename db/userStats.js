@@ -18,9 +18,17 @@ const userStatsSchema = new mongoose.Schema({
         default: [],
         type: Array,
     },
+    currentStreak: {
+        default: 1,
+        type: Number,
+    },
     highestStreakCount: {
         default: 1,
         type: Number,
+    },
+    daysOfWeekCompleted: {
+        defualt: [false, false, false, false, false, false, false],
+        type: Array,
     },
     applesCount: {
         default: 0,

@@ -1,4 +1,5 @@
 const db = require('../db')
+const { checkStreak } = require('../middleware/gamification')
 
 exports.getUserStats = async (req, res, next) => {
     const user = req.params.id
@@ -32,6 +33,19 @@ exports.updateUserStats = async (req, res, next) => {
         if (req.body.fedLlama) {
             updatedStats.llamaFeedings.push(new Date())
             await updatedStats.save()
+
+            let feedings = 0
+            updatedStats.llamaFeedings.map((feeding) => {
+                if (
+                    Math.abs(new Date() - new Date(feeding)) / 36e5 <
+                    new Date().getHours()
+                ) {
+                    feedings = feedings + 1
+                }
+            })
+            if (feedings === 3) {
+                checkStreak(updatedStats)
+            }
         }
 
         return res.status(200).json(updatedStats)
