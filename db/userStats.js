@@ -50,6 +50,10 @@ const userStatsSchema = new mongoose.Schema({
         default: [],
         type: Array,
     },
+    llamaLocations: {
+        type: Array,
+        default: ['Winter', 'Spring', 'Summer', 'Autumn', 'AllSeasons'],
+    },
 })
 
 const userStats = mongoose.model('UserStats', userStatsSchema)
