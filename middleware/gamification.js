@@ -1,3 +1,4 @@
+const { getDay } = require('date-fns')
 const db = require('../db')
 
 exports.checkForGoalCompletion = async (req, res, next) => {
@@ -137,20 +138,48 @@ const checkStreak = async (req, userStats) => {
         let date = new Date(req.get('llamaDate'))
 
         date = new Date(date.setHours(0, 0, 0, 0))
-        console.log('checking streak')
-        //had to do jank comparison because of bullshit date strings
-        let doesDateAlreadyExist = false
-        userStats.daysLoggedIn.map((d) => {
-            if (d.toString() == date.toString()) {
-                doesDateAlreadyExist = true
-            }
-        })
 
-        if (!doesDateAlreadyExist) {
-            userStats.daysLoggedIn.push(date)
-            await userStats.save()
+        let oldLength = userStats.daysLoggedIn.length
+
+        userStats.daysLoggedIn.push(date)
+
+        userStats.daysLoggedIn = userStats.daysLoggedIn
+            .map(function (date) {
+                return date.getTime()
+            })
+            .filter(function (date, i, array) {
+                return array.indexOf(date) === i
+            })
+            .map(function (time) {
+                return new Date(time)
+            })
+
+        await userStats.save()
+
+        let newLength = userStats.daysLoggedIn.length
+
+        if (newLength > oldLength) {
             io.emit('streak incremented', {
                 userId: req.params.id,
+            })
+
+            let dayOfWeek = date.getDay()
+            dayOfWeek = dayOfWeek - 1
+            if (dayOfWeek === 0) {
+                dayOfWeek = 6
+            }
+
+            let fibNums = [1, 2, 3, 5, 8, 13, 21]
+            let userStats = await db.UserStats.findOne({
+                user: req.params.id,
+            })
+            userStats.applesCount = userStats.applesCount + fibNums[dayOfWeek]
+            await userStats.save()
+            io.emit('apples acquired', {
+                userId: req.params.id,
+                data: {
+                    applesCount: userStats.applesCount,
+                },
             })
         }
     }
