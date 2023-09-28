@@ -143,7 +143,7 @@ const levels = [
 
 exports.checkStreak = async (userStats) => {
     try {
-        let date = new Date()
+        let date = new Date(new Date().setHours(0, 0, 0, 0))
         let oldLength = userStats.daysLoggedIn.length
 
         userStats.daysLoggedIn.push(date)
@@ -167,52 +167,14 @@ exports.checkStreak = async (userStats) => {
             io.emit('streak incremented', {
                 userId: userStats.user,
             })
-
-            let dayOfWeek = date.getDay()
-            dayOfWeek = dayOfWeek - 1
-            if (dayOfWeek === 0) {
-                dayOfWeek = 6
-            }
-
-            let fibNums = [5, 10, 15, 20, 25, 30, 50]
-            userStats.applesCount = userStats.applesCount + fibNums[dayOfWeek]
         }
 
         let currentStreak = 1
-        let daysOfWeekCompleted = new Array(7).fill(false)
 
         let reversed = userStats.daysLoggedIn
         reversed.reverse()
         //loop through dates
         for (let i = 0; i < reversed.length - 1; i++) {
-            if (
-                isThisWeek(new Date(reversed[i]), {
-                    weekStartsOn: 1,
-                })
-            ) {
-                if (isMonday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[0] = true
-                }
-                if (isTuesday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[1] = true
-                }
-                if (isWednesday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[2] = true
-                }
-                if (isThursday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[3] = true
-                }
-                if (isFriday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[4] = true
-                }
-                if (isSaturday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[5] = true
-                }
-                if (isSunday(new Date(reversed[i]))) {
-                    daysOfWeekCompleted[6] = true
-                }
-            }
-
             if (
                 differenceInDays(
                     new Date(reversed[i]),
@@ -224,9 +186,43 @@ exports.checkStreak = async (userStats) => {
                 break
             }
         }
+
+        let addApplesNum = 1
+        switch (currentStreak) {
+            case 1:
+                addApplesNum = 5
+                break
+            case 2:
+                addApplesNum = 10
+                break
+            case 5:
+                addApplesNum = 25
+                break
+            case 10:
+                addApplesNum = 50
+                break
+            case 25:
+                addApplesNum = 100
+                break
+            case 50:
+                addApplesNum = 500
+                break
+            case 100:
+                addApplesNum = 5000
+                break
+
+            default:
+                break
+        }
+
+        userStats.applesCount = userStats.applesCount + addApplesNum
         userStats.currentStreak = currentStreak
-        userStats.daysOfWeekCompleted = daysOfWeekCompleted
+
+        if (currentStreak > userStats.highestStreakCount) {
+            userStats.highestStreakCount = currentStreak
+        }
         await userStats.save()
+
         io.emit('apples acquired', {
             userId: userStats.user,
             data: {
