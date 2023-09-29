@@ -3,20 +3,16 @@ const { sendEmail } = require('../email-engine/main')
 
 exports.throwAnApple = async (req, res, next) => {
     const userId = req.params.id
-    const toEmail = req.body.toEmail
-
-    console.log(userId)
+    const email = req.body.email
 
     const user = await getUser(userId)
 
-    console.log(user)
-
     const to = {
-        email: toEmail,
+        email,
     }
 
     const subject = `BOINK - ${user.first_name} threw an apple at you!`
-    const context = {}
+    const context = { name: user.first_name }
 
     const template = 'throwAnApple'
 
