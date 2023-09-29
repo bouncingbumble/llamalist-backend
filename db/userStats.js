@@ -57,7 +57,7 @@ const userStatsSchema = new mongoose.Schema({
             { component: 'Nature', type: 'Spring' },
             { component: 'Nature', type: 'Summer' },
             { component: 'Nature', type: 'Autumn' },
-            { component: 'Nature', type: 'AllSeasons' },
+            { component: 'Nature', type: 'All Seasons' },
         ],
     },
 })
