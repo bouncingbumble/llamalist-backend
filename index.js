@@ -11,6 +11,7 @@ const errorHandler = require('./util/error')
 const taskRoutes = require('./routes/tasks')
 const userRoutes = require('./routes/users')
 const labelRoutes = require('./routes/labels')
+const emailRoutes = require('./routes/emails')
 const gamificationRoutes = require('./routes/gamification')
 const checklistRoutes = require('./routes/checklist')
 const initializeSocket = require('./util/socket')
@@ -23,6 +24,7 @@ const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
+const { sendEmail } = require('./email-engine/main')
 
 global.io = require('socket.io')(server, {
     cors: { origin: process.env.FRONTEND },
@@ -35,6 +37,7 @@ app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
 app.use('/api/v1/users/:id', ClerkExpressRequireAuth, userRoutes)
+app.use('/api/v1/users/:id/emails', ClerkExpressRequireAuth, emailRoutes)
 app.use('/api/v1/users/:id/labels', ClerkExpressRequireAuth, labelRoutes)
 app.use('/api/v1/users/:id/checklist', ClerkExpressRequireAuth, checklistRoutes)
 app.use(
