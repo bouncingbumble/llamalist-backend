@@ -44,17 +44,16 @@ exports.getAllTasks = async (req, res, next) => {
 }
 
 exports.getCompletedTasks = async (req, res, next) => {
-    const page = req.query.page
     const userId = req.params.id
+
+    console.log('hello')
 
     try {
         let tasks = await db.Task.find({
             user: userId,
-            isCompleted: true,
+            completedDate: { $ne: null },
         })
-            .sort({ completionDate: 'desc' })
-            .skip((page - 1) * 25)
-            .limit(25)
+            .sort({ completedDate: 'desc' })
             .populate('labels checklist')
 
         return res.status(200).json(tasks)

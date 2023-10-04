@@ -13,12 +13,12 @@ const {
 } = require('../api/tasks')
 
 router.route('/').post(createTask)
+router.route('/completedTasks').get(getCompletedTasks)
 router.route('/taskId/:taskId').get(getTaskById)
 router.route('/:taskId').put(updateTask)
 router.route('/:taskId').delete(deleteTask)
 router.route('/').get(getAllTasks)
 router.route('/all').get(getAllTasks)
-router.route('/completed').get(getCompletedTasks)
 router.route('/numCompleted').get(getNumCompletedTasks)
 router.route('/search').get(searchTasks)
 
