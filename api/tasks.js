@@ -46,8 +46,6 @@ exports.getAllTasks = async (req, res, next) => {
 exports.getCompletedTasks = async (req, res, next) => {
     const userId = req.params.id
 
-    console.log('hello')
-
     try {
         let tasks = await db.Task.find({
             user: userId,
@@ -102,7 +100,7 @@ exports.updateTask = async (req, res, next) => {
     }
 }
 
-exports.searchTasks = async (req, res, next) => {
+exports.searchCompletedTasks = async (req, res, next) => {
     try {
         let results = await db.Task.aggregate([
             {
@@ -113,16 +111,13 @@ exports.searchTasks = async (req, res, next) => {
                             {
                                 autocomplete: {
                                     query: req.query.q,
-                                    path: 'description',
+                                    path: 'name',
                                 },
                             },
-
                             {
-                                equals: {
+                                text: {
                                     path: 'user',
-                                    value: mongoose.Types.ObjectId(
-                                        req.params.id
-                                    ),
+                                    query: req.params.id,
                                 },
                             },
                         ],
@@ -151,11 +146,9 @@ exports.searchTasks = async (req, res, next) => {
                                 },
                             },
                             {
-                                equals: {
+                                text: {
                                     path: 'user',
-                                    value: mongoose.Types.ObjectId(
-                                        req.params.id
-                                    ),
+                                    query: req.params.id,
                                 },
                             },
                         ],
@@ -167,23 +160,23 @@ exports.searchTasks = async (req, res, next) => {
             },
         ])
 
-        console.log(resultsIds)
-
         results2 = results2.filter(
             (r) => !resultsIds.includes(r._id.toString())
         )
 
-        console.log(results2)
-
-        results = await Promise.all(
-            [...results, ...results2].map(async (r) => {
-                const task = await db.Task.findById(r._id).populate(
-                    'files labels checklist'
-                )
-                return task
-            })
+        results = [...results, ...results2].filter(
+            (r) => r.completedDate !== null
         )
-        return res.status(200).json(results)
+
+        let populated = []
+        for await (let t of results) {
+            const task = await db.Task.findById(t._id).populate(
+                'labels checklist'
+            )
+            populated.push(task)
+        }
+
+        return res.status(200).json(populated)
     } catch (err) {
         return next(err)
     }
