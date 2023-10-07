@@ -9,6 +9,7 @@ const port = process.env.PORT || 8080
 const bodyParser = require('body-parser')
 const errorHandler = require('./util/error')
 const taskRoutes = require('./routes/tasks')
+const completedTasksRoutes = require('./routes/completed')
 const userRoutes = require('./routes/users')
 const labelRoutes = require('./routes/labels')
 const emailRoutes = require('./routes/emails')
@@ -24,7 +25,6 @@ const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
-const { sendEmail } = require('./email-engine/main')
 
 global.io = require('socket.io')(server, {
     cors: { origin: process.env.FRONTEND },
@@ -45,6 +45,11 @@ app.use(
     ClerkExpressRequireAuth,
     checkForGoalCompletion,
     taskRoutes
+)
+app.use(
+    '/api/v1/users/:id/completedTasks',
+    ClerkExpressRequireAuth,
+    completedTasksRoutes
 )
 app.use(
     '/api/v1/users/:id/gamification',
