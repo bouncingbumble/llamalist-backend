@@ -51,14 +51,12 @@ const userStatsSchema = new mongoose.Schema({
         type: Array,
     },
     llamaLocations: {
+        default: [],
         type: Array,
-        default: [
-            { component: 'Nature', type: 'Winter' },
-            { component: 'Nature', type: 'Spring' },
-            { component: 'Nature', type: 'Summer' },
-            { component: 'Nature', type: 'Autumn' },
-            { component: 'Nature', type: 'All Seasons' },
-        ],
+    },
+    llamaAccessories: {
+        default: [],
+        type: Array,
     },
 })
 
