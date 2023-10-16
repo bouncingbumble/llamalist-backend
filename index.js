@@ -25,7 +25,6 @@ const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
-const { getUserByEmail } = require('./clerk/api')
 const { incomingEmail } = require('./api/email')
 
 global.io = require('socket.io')(server, {

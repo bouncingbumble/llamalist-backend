@@ -1,3 +1,4 @@
+const { getUserByEmail } = require('../clerk/api')
 const db = require('../db')
 
 exports.incomingEmail = async (req, res, next) => {
