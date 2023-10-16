@@ -16,11 +16,12 @@ exports.getUser = async (userId) => {
 exports.getUserByEmail = async (email) => {
     try {
         const res = await axios.get(
-            `https://api.clerk.com/v1/users?email_address=${userId}`
+            `https://api.clerk.com/v1/users?email_address=${email}`
         )
         console.log(res.data)
         return res.data
     } catch (error) {
+        console.log(error)
         return error
     }
 }
