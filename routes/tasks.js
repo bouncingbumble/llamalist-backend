@@ -10,11 +10,11 @@ const {
 } = require('../api/tasks')
 
 router.route('/').post(createTask)
+router.route('/numCompleted').get(getNumCompletedTasks)
 router.route('/taskId/:taskId').get(getTaskById)
 router.route('/:taskId').put(updateTask)
 router.route('/:taskId').delete(deleteTask)
 router.route('/').get(getAllTasks)
 router.route('/all').get(getAllTasks)
-router.route('/numCompleted').get(getNumCompletedTasks)
 
 module.exports = router

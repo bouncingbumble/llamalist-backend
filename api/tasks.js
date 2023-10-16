@@ -62,8 +62,9 @@ exports.getCompletedTasks = async (req, res, next) => {
 
 exports.getNumCompletedTasks = async (req, res, next) => {
     try {
-        const tasks = await db.Task.find({ user: req.params.id }).match({
-            isCompleted: true,
+        const tasks = await db.Task.find({
+            user: req.params.id,
+            completedDate: { $ne: null },
         })
 
         return res.status(200).json(tasks.length)
