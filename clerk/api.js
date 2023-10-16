@@ -19,7 +19,7 @@ exports.getUserByEmail = async (email) => {
             `https://api.clerk.com/v1/users?email_address=${email}`
         )
         console.log(res.data)
-        return res.data[0].id
+        return res.data[0]
     } catch (error) {
         console.log(error)
         return error
