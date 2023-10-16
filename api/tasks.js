@@ -1,5 +1,4 @@
 const db = require('../db')
-const mongoose = require('mongoose')
 
 exports.createTask = async (req, res, next) => {
     let userId = req.params.id
