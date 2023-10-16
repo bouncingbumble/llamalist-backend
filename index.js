@@ -97,13 +97,13 @@ app.post('/api/v1/incomingEmail', async (req, res) => {
         next(err)
     }
 
-    console.log(`trying to create email task by user ${foundUser._id}`)
+    console.log(`trying to create email task by user ${foundUser.id}`)
 
     try {
         await db.Task.create({
             name,
             notes,
-            user: foundUser._id,
+            user: foundUser.id,
         })
     } catch (err) {
         console.log(err)
