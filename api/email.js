@@ -42,6 +42,7 @@ exports.incomingEmail = async (req, res, next) => {
             name,
             notes,
             user: foundUser.id,
+            isInbox: true,
         })
     } catch (err) {
         console.log(err)

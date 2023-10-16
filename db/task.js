@@ -58,6 +58,10 @@ const taskSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    isInbox: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 /**
