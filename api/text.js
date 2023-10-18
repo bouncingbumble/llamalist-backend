@@ -9,10 +9,10 @@ exports.incomingText = async (req, res, next) => {
     const user = await db.UserSettings.findOne({ phoneNumber: from })
 
     if (user === null) {
-        this.sendText(
-            from,
-            'We were unable to find an account with that number. Make sure you have added your number correctly in your user profile.'
-        )
+        // this.sendText(
+        //     from,
+        //     'We were unable to find an account with that number. Make sure you have added your number correctly in your user profile.'
+        // )
     } else {
         try {
             await db.Task.create({
