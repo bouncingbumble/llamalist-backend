@@ -84,7 +84,7 @@ exports.updateUserSettings = async (req, res, next) => {
                 updatedSettings.phoneNumber,
                 'Welcome to Llama List, send me a text to add to your list from anywhere!',
                 [
-                    'https://drive.google.com/file/d/1d7kqEjDoa8miYcTptR-Rh1vfPqFOWciw/view?usp=share_link',
+                    'https://office-otter-production.s3.us-east-2.amazonaws.com/6b915c29-849b-48b3-a0f7-92fc96af431aLlama%20List.vcf',
                 ]
             )
         }
