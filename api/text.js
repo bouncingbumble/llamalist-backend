@@ -10,7 +10,7 @@ exports.incomingText = async (req, res, next) => {
     try {
         await db.Task.create({
             name: messageBody,
-            user: user.id,
+            user: user.user,
             isInbox: true,
             key: uuidv4(),
         })
