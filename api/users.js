@@ -82,7 +82,10 @@ exports.updateUserSettings = async (req, res, next) => {
         if (req.body.sendWelcomeText) {
             sendText(
                 updatedSettings.phoneNumber,
-                'Welcome to Llama List, send me a text to add to your list from anywhere!'
+                'Welcome to Llama List, send me a text to add to your list from anywhere!',
+                [
+                    'https://drive.google.com/file/d/1d7kqEjDoa8miYcTptR-Rh1vfPqFOWciw/view?usp=share_link',
+                ]
             )
         }
         return res.status(200).json(updatedSettings)
