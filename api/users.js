@@ -1,5 +1,6 @@
 const db = require('../db')
 const { checkStreak } = require('../middleware/gamification')
+const { sendText } = require('./text')
 
 exports.getUserStats = async (req, res, next) => {
     const user = req.params.id
@@ -78,6 +79,12 @@ exports.updateUserSettings = async (req, res, next) => {
             { new: true }
         )
 
+        if (req.body.sendWelcomeText) {
+            sendText(
+                updatedSettings.phoneNumber,
+                'Welcome to Llama List, send me a text to add to your list from anywhere!'
+            )
+        }
         return res.status(200).json(updatedSettings)
     } catch (err) {
         return next(err)
