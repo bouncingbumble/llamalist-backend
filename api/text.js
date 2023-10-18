@@ -39,16 +39,16 @@ exports.incomingText = async (req, res, next) => {
 }
 
 exports.sendText = async (to, text, media_urls) => {
-    telnyx.messages.create(
-        {
-            from: process.env.TELYNX_NUMBER, // Your Telnyx number
-            to,
-            text,
-            media_urls,
-        },
-        function (err, response) {
-            // asynchronously called
-            console.log(response)
-        }
-    )
+    // telnyx.messages.create(
+    //     {
+    //         from: process.env.TELYNX_NUMBER, // Your Telnyx number
+    //         to,
+    //         text,
+    //         media_urls,
+    //     },
+    //     function (err, response) {
+    //         // asynchronously called
+    //         console.log(response)
+    //     }
+    // )
 }
