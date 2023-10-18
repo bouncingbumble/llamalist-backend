@@ -3,12 +3,12 @@ const { v4: uuidv4 } = require('uuid')
 var telnyx = require('telnyx')(process.env.TELYNX_API_KEY)
 
 exports.incomingText = async (req, res, next) => {
-    if (req.body.data.event_type === 'message.sent') {
+    if (req.body.data.event_type === 'message.received') {
         const from = req.body.data.payload.from.phone_number
         const messageBody = req.body.data.payload.text
 
         const user = await db.UserSettings.findOne({ phoneNumber: from })
-
+        console.log(user)
         if (user === null) {
             this.sendText(
                 from,
@@ -35,6 +35,7 @@ exports.incomingText = async (req, res, next) => {
                 console.log(err)
             }
         }
+    } else {
     }
     res.sendStatus(200)
 }
