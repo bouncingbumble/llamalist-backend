@@ -1,4 +1,3 @@
-const { getUserByPhoneNumber } = require('../clerk/api')
 const db = require('../db')
 const { v4: uuidv4 } = require('uuid')
 
@@ -6,7 +5,7 @@ exports.incomingText = async (req, res, next) => {
     const from = req.body.data.payload.from.phone_number
     const messageBody = req.body.data.payload.text
 
-    const user = await getUserByPhoneNumber(from)
+    const user = await db.UserSettings.findOne({ phoneNumber: from })
 
     try {
         await db.Task.create({
