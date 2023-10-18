@@ -8,24 +8,31 @@ exports.incomingText = async (req, res, next) => {
 
     const user = await db.UserSettings.findOne({ phoneNumber: from })
 
-    try {
-        await db.Task.create({
-            name: messageBody,
-            user: user.user,
-            isInbox: true,
-            key: uuidv4(),
-        })
-
-        io.emit('new task', {
-            userId: user.id,
-        })
-
+    if (user === null) {
         this.sendText(
-            user.phoneNumber,
-            'Task Added! Go to https://app.llamalist.com/tasks/inbox/All%20Labels to view.'
+            from,
+            'We were unable to find an account with that number. Make sure you have added your number correctly in your user profile.'
         )
-    } catch (err) {
-        console.log(err)
+    } else {
+        try {
+            await db.Task.create({
+                name: messageBody,
+                user: user.user,
+                isInbox: true,
+                key: uuidv4(),
+            })
+
+            io.emit('new task', {
+                userId: user.id,
+            })
+
+            this.sendText(
+                user.phoneNumber,
+                'Task Added! Go to https://app.llamalist.com/tasks/inbox/All%20Labels to view.'
+            )
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     res.sendStatus(200)
