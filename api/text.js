@@ -22,7 +22,7 @@ exports.incomingText = async (req, res, next) => {
 
         this.sendText(
             user.phoneNumber,
-            'Task Added! Go to https://app.llamalist.com to view.'
+            'Task Added! Go to https://app.llamalist.com/tasks/inbox/All%20Labels to view.'
         )
     } catch (err) {
         console.log(err)
