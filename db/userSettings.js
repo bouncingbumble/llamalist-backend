@@ -6,6 +6,10 @@ const userSettingsSchema = new mongoose.Schema({
         default: '',
         required: true,
     },
+    phoneNumber: {
+        type: String,
+        default: '',
+    },
     hideSectionWelcomeMessages: {
         default: {
             all: false,
