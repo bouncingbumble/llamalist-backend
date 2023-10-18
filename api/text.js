@@ -19,6 +19,11 @@ exports.incomingText = async (req, res, next) => {
         io.emit('new task', {
             userId: user.id,
         })
+
+        this.sendText(
+            user.phoneNumber,
+            'Task Added! Go to https://app.llamalist.com to view.'
+        )
     } catch (err) {
         console.log(err)
     }
