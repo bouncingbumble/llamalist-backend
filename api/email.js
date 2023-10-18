@@ -1,5 +1,6 @@
 const { getUserByEmail } = require('../clerk/api')
 const db = require('../db')
+const { v4: uuidv4 } = require('uuid')
 
 exports.incomingEmail = async (req, res, next) => {
     console.log('recieved email')
@@ -43,6 +44,11 @@ exports.incomingEmail = async (req, res, next) => {
             notes,
             user: foundUser.id,
             isInbox: true,
+            key: uuidv4(),
+        })
+
+        io.emit('new task', {
+            userId: foundUser.id,
         })
     } catch (err) {
         console.log(err)

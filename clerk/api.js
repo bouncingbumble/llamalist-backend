@@ -19,6 +19,21 @@ exports.getUserByEmail = async (email) => {
             `https://api.clerk.com/v1/users?email_address=${email}`
         )
         console.log(res.data)
+
+        return res.data[0]
+    } catch (error) {
+        console.log(error)
+        return error
+    }
+}
+
+exports.getUserByPhoneNumber = async (number) => {
+    let numberFormatted = number.replace(number.charAt(0), '%2B')
+    try {
+        const res = await axios.get(
+            `https://api.clerk.com/v1/users?phone_number=${numberFormatted}`
+        )
+
         return res.data[0]
     } catch (error) {
         console.log(error)
