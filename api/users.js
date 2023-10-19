@@ -92,6 +92,7 @@ exports.updateUserSettings = async (req, res, next) => {
 
         if (req.body.createStripeCustomer) {
             try {
+                console.log('creating stripe customer')
                 let customer = await stripe.customers.create({
                     email: req.body.email,
                     name: req.body.email,
