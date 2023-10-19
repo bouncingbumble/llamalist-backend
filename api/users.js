@@ -1,6 +1,7 @@
 const db = require('../db')
 const { checkStreak } = require('../middleware/gamification')
 const { sendText } = require('./text')
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 exports.getUserStats = async (req, res, next) => {
     const user = req.params.id
@@ -88,6 +89,17 @@ exports.updateUserSettings = async (req, res, next) => {
                 ]
             )
         }
+
+        if (req.body.createStripeCustomer) {
+            let customer = await stripe.customers.create({
+                email: req.body.email,
+                name: req.body.email,
+            })
+            updatedSettings.stripeCustomerId = customer.id
+
+            await updatedSettings.save()
+        }
+
         return res.status(200).json(updatedSettings)
     } catch (err) {
         return next(err)
