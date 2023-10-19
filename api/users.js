@@ -91,13 +91,17 @@ exports.updateUserSettings = async (req, res, next) => {
         }
 
         if (req.body.createStripeCustomer) {
-            let customer = await stripe.customers.create({
-                email: req.body.email,
-                name: req.body.email,
-            })
-            updatedSettings.stripeCustomerId = customer.id
+            try {
+                let customer = await stripe.customers.create({
+                    email: req.body.email,
+                    name: req.body.email,
+                })
+                updatedSettings.stripeCustomerId = customer.id
 
-            await updatedSettings.save()
+                await updatedSettings.save()
+            } catch (err) {
+                console.log(err)
+            }
         }
 
         return res.status(200).json(updatedSettings)
