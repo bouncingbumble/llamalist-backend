@@ -20,6 +20,7 @@ exports.createLabel = async (req, res, next) => {
         const createdLabel = await db.Label.create(labelToCreate)
         let task = await db.Task.findById(taskId)
         task.labels = [...task.labels, createdLabel._id]
+        task.isInbox = false
         await task.save()
 
         if (req.headers.referer === `${process.env.FRONTEND}/`) {
