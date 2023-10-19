@@ -10,6 +10,10 @@ const userSettingsSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    stripeCustomerId: {
+        type: String,
+        default: '',
+    },
     hideSectionWelcomeMessages: {
         default: {
             all: false,
