@@ -25,6 +25,10 @@ const userSettingsSchema = new mongoose.Schema({
         type: Object,
         required: true,
     },
+    llamaName: {
+        type: String,
+        default: '',
+    },
 })
 
 const userSettings = mongoose.model('UserSettings', userSettingsSchema)

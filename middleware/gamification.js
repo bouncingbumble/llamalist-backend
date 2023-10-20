@@ -93,7 +93,7 @@ const levels = [
                     : false,
         },
         {
-            title: 'Visit llama land',
+            title: 'Play the mini game by clicking on the llama',
             isCompleted: (tasks, userStats) => {
                 return userStats.didVisitLlamaLand
             },

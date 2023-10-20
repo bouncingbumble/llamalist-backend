@@ -2,6 +2,7 @@ const db = require('../db')
 const { checkStreak } = require('../middleware/gamification')
 const { sendText } = require('./text')
 const stripe = require('stripe')(process.env.STRIPE_KEY)
+const { v4: uuidv4 } = require('uuid')
 
 exports.getUserStats = async (req, res, next) => {
     const user = req.params.id
@@ -10,6 +11,7 @@ exports.getUserStats = async (req, res, next) => {
 
         if (stats === null) {
             stats = await db.UserStats.create({ user })
+            await createFirstTasks(user)
         }
 
         return res.status(200).json(stats)
@@ -108,4 +110,79 @@ exports.updateUserSettings = async (req, res, next) => {
     } catch (err) {
         return next(err)
     }
+}
+
+const createFirstTasks = async (id) => {
+    try {
+        //grab llama list label
+        const label = await db.Label.findOne({ name: '🦙 llama list' })
+        let task = await db.Task.create({
+            user: id,
+            isNewTask: false,
+            name: 'See your stats on the top right, click an element to view more details',
+            due: null,
+            when: new Date(),
+            completedDate: null,
+            position: 0,
+            key: uuidv4(),
+            isInbox: false,
+            labels: [label._id],
+            checklist: [],
+        })
+        //create checklist items
+        const items = [
+            {
+                name: '⭐️⭐️⭐️ => levels and goals',
+                position: 1000,
+                task: task._id,
+            },
+            {
+                name: '🍎 => spend your apples in the apple emporium',
+                position: 1010,
+                task: task._id,
+            },
+            {
+                name: '🔥 => earn more apples by keeping a daily streak',
+                position: 1020,
+                task: task._id,
+            },
+            {
+                name: '🦙 => find the hidden golden llama each week for 50 apples!!',
+                position: 1030,
+                task: task._id,
+            },
+            {
+                name: '🅰🅱 => user profile',
+                position: 1040,
+                task: task._id,
+            },
+        ]
+
+        const createdChecklistItems = await Promise.all(
+            items.map(async (item) => {
+                let createdItem = await db.ChecklistItem.create(item)
+                return createdItem._id
+            })
+        )
+
+        task.checklist = createdChecklistItems
+        await task.save()
+
+        await db.Task.create({
+            user: id,
+            isNewTask: false,
+            name: 'Check me off to earn your first apple',
+            due: null,
+            when: new Date(),
+            completedDate: null,
+            position: 0,
+            key: uuidv4(),
+            isInbox: false,
+            labels: [label._id],
+            checklist: [],
+        })
+    } catch (error) {
+        console.log(error)
+    }
+    return
 }
