@@ -195,19 +195,19 @@ exports.checkStreak = async (userStats) => {
             case 2:
                 addApplesNum = 10
                 break
-            case 5:
-                addApplesNum = 25
+            case 3:
+                addApplesNum = 20
                 break
-            case 10:
+            case 5:
                 addApplesNum = 50
                 break
-            case 25:
+            case 10:
                 addApplesNum = 100
                 break
-            case 50:
+            case 25:
                 addApplesNum = 500
                 break
-            case 100:
+            case 50:
                 addApplesNum = 5000
                 break
 
