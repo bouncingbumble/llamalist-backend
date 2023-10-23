@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 mongoose.Promise = Promise
 mongoose.connect(
-    `mongodb+srv://admin:${process.env.MONGODB_ADMIN_PASSWORD}@llamalist-db.nzpujkn.mongodb.net/?retryWrites=true&w=majority`,
+    `mongodb+srv://admin:${process.env.MONGODB_ADMIN_PASSWORD}@llamalist-db.nzpujkn.mongodb.net/${process.env.DB}?retryWrites=true&w=majority`,
     {
         keepAlive: true,
         useNewUrlParser: true,
