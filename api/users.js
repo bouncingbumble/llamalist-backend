@@ -119,7 +119,7 @@ const createFirstTasks = async (id) => {
         let task = await db.Task.create({
             user: id,
             isNewTask: false,
-            name: 'See your stats on the top right, click an element to view more details',
+            name: 'See your stats on the top right? Click an element for the detailed view.',
             due: null,
             when: new Date(),
             completedDate: null,
