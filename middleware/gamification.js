@@ -101,21 +101,23 @@ const levels = [
     ],
     [
         {
-            title: 'Lorem ipsum dolor sit amet',
-            isCompleted: () => {
-                return false
-            },
+            title: 'Text in a task',
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.from === 'text').length > 0
+                    ? true
+                    : false,
         },
         {
-            title: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
-            isCompleted: () => {
-                return false
-            },
+            title: 'Complete ten tasks',
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.completedDate !== null).length > 9
+                    ? true
+                    : false,
         },
         {
-            title: 'Lorem ipsum dolor sit amet consectetur.',
-            isCompleted: () => {
-                return false
+            title: 'Buy your first accessory in the llama emporium',
+            isCompleted: (tasks, userStats) => {
+                return userStats.llamaAccessories.length > 0
             },
         },
     ],

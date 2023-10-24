@@ -39,7 +39,12 @@ app.use(cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
-app.use('/api/v1/users/:id', ClerkExpressRequireAuth, userRoutes)
+app.use(
+    '/api/v1/users/:id',
+    ClerkExpressRequireAuth,
+    checkForGoalCompletion,
+    userRoutes
+)
 app.use('/api/v1/users/:id/emails', ClerkExpressRequireAuth, emailRoutes)
 app.use('/api/v1/users/:id/labels', ClerkExpressRequireAuth, labelRoutes)
 app.use('/api/v1/users/:id/checklist', ClerkExpressRequireAuth, checklistRoutes)

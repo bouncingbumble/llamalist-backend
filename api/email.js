@@ -45,6 +45,7 @@ exports.incomingEmail = async (req, res, next) => {
             user: foundUser.id,
             isInbox: true,
             key: uuidv4(),
+            from: 'email',
         })
 
         io.emit('new task', {

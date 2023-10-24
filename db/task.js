@@ -62,6 +62,10 @@ const taskSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    from: {
+        type: String,
+        default: 'web',
+    },
 })
 
 /**

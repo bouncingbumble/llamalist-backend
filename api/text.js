@@ -21,6 +21,7 @@ exports.incomingText = async (req, res, next) => {
                     user: user.user,
                     isInbox: true,
                     key: uuidv4(),
+                    from: 'text',
                 })
 
                 io.emit('new task', {
