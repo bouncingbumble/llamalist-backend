@@ -164,6 +164,26 @@ const levels = [
             },
         },
     ],
+    [
+        {
+            title: (name) => `Take ${name} to space`,
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaLocations.filter((l) => l.name === 'Space')
+                    .length > 0,
+        },
+        {
+            title: () => 'Complete 25 tasks',
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.completedDate !== null).length > 24
+                    ? true
+                    : false,
+        },
+        {
+            title: (name) => `Score over 25,000 on the llama game`,
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaLandHighScore > 25000,
+        },
+    ],
 ]
 
 exports.checkStreak = async (userStats) => {
