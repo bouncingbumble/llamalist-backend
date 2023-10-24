@@ -26,7 +26,7 @@ exports.checkForGoalCompletion = async (req, res, next) => {
         let isFirstTimeCompleted = [false, false, false]
         let didCompleteLevel = false
         //mark the corresponding goal as completed if the isCompleted function returns true
-        levels[userStats.level].forEach((goal, goalNum) => {
+        levels[userStats.level]?.forEach((goal, goalNum) => {
             if (goal.isCompleted(tasks, userStats)) {
                 //if the goal was uncompleted before
                 if (!userStats.areGoalsCompleted[goalNum]) {
