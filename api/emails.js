@@ -20,11 +20,13 @@ exports.throwAnApple = async (req, res, next) => {
     sendEmail(to, subject, context, template)
 
     try {
-        db.UserStats.findOneAndUpdate(
+        await db.UserStats.findOneAndUpdate(
             { user: userId },
             { threwAnAppleAtAFriend: true }
         )
-    } catch (error) {}
+    } catch (error) {
+        console.log(error)
+    }
 
     res.sendStatus(200)
 }
