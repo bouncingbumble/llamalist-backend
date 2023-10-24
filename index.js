@@ -30,7 +30,7 @@ const { getUserByPhoneNumber } = require('./clerk/api')
 const { incomingText } = require('./api/text')
 
 global.io = require('socket.io')(server, {
-    cors: { origin: process.env.FRONTEND },
+    cors: { origin: [process.env.FRONTEND, process.env.NETLIFY_FRONTEND] },
 })
 
 initializeSocket()
