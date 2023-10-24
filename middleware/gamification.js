@@ -123,22 +123,20 @@ const levels = [
     ],
     [
         {
-            title: 'Lorem ipsum dolor sit amet',
-            isCompleted: () => {
-                return false
-            },
+            title: () => 'Email in a task',
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.from === 'email').length > 0
+                    ? true
+                    : false,
         },
         {
-            title: 'Lorem ipsum dolor sit amet consectetur adipisicing.',
-            isCompleted: () => {
-                return false
-            },
+            title: () => 'Score over 10,000 in the llama game',
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaLandHighScore > 10000,
         },
         {
-            title: 'Lorem ipsum dolor sit amet consectetur.',
-            isCompleted: () => {
-                return false
-            },
+            title: () => 'Create fifteen tasks',
+            isCompleted: (tasks) => tasks.length > 14,
         },
     ],
 ]
