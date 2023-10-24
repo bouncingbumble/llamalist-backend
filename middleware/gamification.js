@@ -116,9 +116,8 @@ const levels = [
         },
         {
             title: 'Buy your first accessory in the llama emporium',
-            isCompleted: (tasks, userStats) => {
-                return userStats.llamaAccessories.length > 0
-            },
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaAccessories.length > 0,
         },
     ],
     [
@@ -182,6 +181,29 @@ const levels = [
             title: (name) => `Score over 25,000 on the llama game`,
             isCompleted: (tasks, userStats) =>
                 userStats.llamaLandHighScore > 25000,
+        },
+    ],
+    [
+        {
+            title: () => `Buy roger another accessory`,
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaAccessories.length > 1,
+        },
+        {
+            title: () => 'Get a 5 day streak',
+            isCompleted: (tasks, userStats) => userStats.highestStreakCount > 4,
+        },
+        {
+            title: (name) => `Find this week's golden llama`,
+            isCompleted: (tasks, userStats) =>
+                isThisWeek(
+                    new Date(
+                        userStats.goldenLlamasFound[
+                            userStats.goldenLlamasFound.length - 1
+                        ]
+                    ),
+                    { weekStartsOn: 1 }
+                ),
         },
     ],
 ]
