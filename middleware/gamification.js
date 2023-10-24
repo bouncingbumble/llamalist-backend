@@ -206,6 +206,24 @@ const levels = [
                 ),
         },
     ],
+    [
+        {
+            title: (name) => `Score over 50,000 in the llama game`,
+            isCompleted: (tasks, userStats) =>
+                userStats.llamaLandHighScore > 50000,
+        },
+        {
+            title: () => 'Get a 10 day streak',
+            isCompleted: (tasks, userStats) => userStats.highestStreakCount > 9,
+        },
+        {
+            title: (name) => `Complete 50 tasks`,
+            isCompleted: (tasks) =>
+                tasks.filter((t) => t.completedDate !== null).length > 49
+                    ? true
+                    : false,
+        },
+    ],
 ]
 
 exports.checkStreak = async (userStats) => {
