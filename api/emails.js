@@ -1,5 +1,6 @@
 const { getUser } = require('../clerk/api')
 const { sendEmail } = require('../email-engine/main')
+const db = require('../db')
 
 exports.throwAnApple = async (req, res, next) => {
     const userId = req.params.id
@@ -17,6 +18,13 @@ exports.throwAnApple = async (req, res, next) => {
     const template = 'throwAnApple'
 
     sendEmail(to, subject, context, template)
+
+    try {
+        db.UserStats.findOneAndUpdate(
+            { user: userId },
+            { threwAnAppleAtAFriend: true }
+        )
+    } catch (error) {}
 
     res.sendStatus(200)
 }

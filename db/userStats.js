@@ -42,6 +42,10 @@ const userStatsSchema = new mongoose.Schema({
         default: false,
         type: Boolean,
     },
+    threwAnAppleAtAFriend: {
+        default: false,
+        type: Boolean,
+    },
     llamaLandHighScore: {
         default: 0,
         type: Number,

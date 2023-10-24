@@ -139,6 +139,31 @@ const levels = [
             isCompleted: (tasks) => tasks.length > 14,
         },
     ],
+    [
+        {
+            title: () => 'Thow an apple at a friend',
+            isCompleted: (tasks, userStats) => userStats.threwAnAppleAtAFriend,
+        },
+        {
+            title: () => 'Get a three day streak',
+            isCompleted: (tasks, userStats) => userStats.highestStreakCount > 2,
+        },
+        {
+            title: () => 'Feed roger an extra apple today',
+            isCompleted: (tasks, userStats) => {
+                let feedings = 0
+                userStats.llamaFeedings.map((feeding) => {
+                    if (
+                        Math.abs(new Date() - new Date(feeding)) / 36e5 <
+                        new Date().getHours()
+                    ) {
+                        feedings = feedings + 1
+                    }
+                })
+                return feedings > 3
+            },
+        },
+    ],
 ]
 
 exports.checkStreak = async (userStats) => {
