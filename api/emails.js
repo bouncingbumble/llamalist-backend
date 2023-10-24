@@ -8,6 +8,15 @@ exports.throwAnApple = async (req, res, next) => {
 
     const user = await getUser(userId)
 
+    try {
+        await db.UserStats.findOneAndUpdate(
+            { user: userId },
+            { threwAnAppleAtAFriend: true }
+        )
+    } catch (error) {
+        console.log(error)
+    }
+
     const to = {
         email,
     }
@@ -18,15 +27,6 @@ exports.throwAnApple = async (req, res, next) => {
     const template = 'throwAnApple'
 
     sendEmail(to, subject, context, template)
-
-    try {
-        await db.UserStats.findOneAndUpdate(
-            { user: userId },
-            { threwAnAppleAtAFriend: true }
-        )
-    } catch (error) {
-        console.log(error)
-    }
 
     res.sendStatus(200)
 }
