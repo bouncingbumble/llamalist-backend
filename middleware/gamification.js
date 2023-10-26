@@ -122,6 +122,20 @@ const levels = [
     ],
     [
         {
+            title: 'Add a a label to a task',
+            isCompleted: (tasks, userStats) => false,
+        },
+        {
+            title: 'Use your notes section',
+            isCompleted: (tasks, userStats) => false,
+        },
+        {
+            title: 'Create a checklist item',
+            isCompleted: (tasks, userStats) => false,
+        },
+    ],
+    [
+        {
             title: () => 'Email in a task',
             isCompleted: (tasks) =>
                 tasks.filter((t) => t.from === 'email').length > 0
@@ -134,14 +148,28 @@ const levels = [
                 userStats.llamaLandHighScore > 10000,
         },
         {
-            title: () => 'Create fifteen tasks',
-            isCompleted: (tasks) => tasks.length > 14,
+            title: () => 'Set a start date',
+            isCompleted: (tasks, userStats) => false,
         },
     ],
     [
         {
             title: () => 'Thow an apple at a friend',
             isCompleted: (tasks, userStats) => userStats.threwAnAppleAtAFriend,
+        },
+        {
+            title: () => 'Create 3 labels',
+            isCompleted: (tasks, userStats) => false,
+        },
+        {
+            title: () => 'Create fifteen tasks',
+            isCompleted: (tasks) => tasks.length > 14,
+        },
+    ],
+    [
+        {
+            title: () => 'Convert a checklist item to a task',
+            isCompleted: (tasks, userStats) => false,
         },
         {
             title: () => 'Get a three day streak',
@@ -204,6 +232,21 @@ const levels = [
                     ),
                     { weekStartsOn: 1 }
                 ),
+        },
+    ],
+    [
+        {
+            title: (name) => `Complete 25 checklist items`,
+            isCompleted: (tasks, userStats) => false,
+        },
+        {
+            title: (name) => `Find 3 golden llams all time`,
+            isCompleted: (tasks, userStats) =>
+                userStats.goldenLlamasFound.length > 2,
+        },
+        {
+            title: (name) => `Complete 15 tasks before their due date`,
+            isCompleted: (tasks, userStats) => false,
         },
     ],
     [

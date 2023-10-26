@@ -62,6 +62,10 @@ const userStatsSchema = new mongoose.Schema({
         default: [],
         type: Array,
     },
+    prestigeLevel: {
+        default: 0,
+        type: Number,
+    },
 })
 
 const userStats = mongoose.model('UserStats', userStatsSchema)
