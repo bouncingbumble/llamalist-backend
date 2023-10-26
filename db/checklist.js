@@ -11,6 +11,7 @@ const checklistItemSchema = new mongoose.Schema({
     },
     completedDate: {
         type: Date,
+        default: null,
     },
     position: {
         type: Number,

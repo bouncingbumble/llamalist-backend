@@ -123,15 +123,24 @@ const levels = [
     [
         {
             title: 'Add a a label to a task',
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.labels.length > 0).length > 2
+                    ? true
+                    : false,
         },
         {
             title: 'Use your notes section',
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.notes.length > 0).length > 0
+                    ? true
+                    : false,
         },
         {
             title: 'Create a checklist item',
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.checklist.length > 0).length > 1
+                    ? true
+                    : false,
         },
     ],
     [
@@ -149,7 +158,8 @@ const levels = [
         },
         {
             title: () => 'Set a start date',
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.when !== null).length > 2 ? true : false,
         },
     ],
     [
@@ -158,8 +168,11 @@ const levels = [
             isCompleted: (tasks, userStats) => userStats.threwAnAppleAtAFriend,
         },
         {
-            title: () => 'Create 3 labels',
-            isCompleted: (tasks, userStats) => false,
+            title: () => 'Use 3 labels',
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.labels.length > 0).length > 4
+                    ? true
+                    : false,
         },
         {
             title: () => 'Create fifteen tasks',
@@ -169,7 +182,10 @@ const levels = [
     [
         {
             title: () => 'Convert a checklist item to a task',
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks.filter((t) => t.from === 'checklist').length > 0
+                    ? true
+                    : false,
         },
         {
             title: () => 'Get a three day streak',
@@ -237,7 +253,13 @@ const levels = [
     [
         {
             title: (name) => `Complete 25 checklist items`,
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks
+                    .map((t) => t.checklist)
+                    .flat()
+                    .filter((t) => t.completedDate).length > 24
+                    ? true
+                    : false,
         },
         {
             title: (name) => `Find 3 golden llams all time`,
@@ -246,7 +268,11 @@ const levels = [
         },
         {
             title: (name) => `Complete 15 tasks before their due date`,
-            isCompleted: (tasks, userStats) => false,
+            isCompleted: (tasks, userStats) =>
+                tasks
+                    .filter((t) => t.due && t.completedDate)
+                    .map((t) => new Date(t.due) < new Date(t.completedDate))
+                    .length > 2,
         },
     ],
     [
