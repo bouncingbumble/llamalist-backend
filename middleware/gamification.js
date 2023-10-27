@@ -46,6 +46,7 @@ exports.checkForGoalCompletion = async (req, res, next) => {
         //if all the goals are completed, the user advances to the next level
         if (userStats.areGoalsCompleted.every((v) => v === true)) {
             userStats.level = userStats.level + 1
+
             userStats.applesCount = userStats.applesCount + 5
             userStats.areGoalsCompleted = [false, false, false]
             await userStats.save()

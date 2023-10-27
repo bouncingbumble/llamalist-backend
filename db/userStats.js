@@ -62,9 +62,9 @@ const userStatsSchema = new mongoose.Schema({
         default: [],
         type: Array,
     },
-    prestigeLevel: {
-        default: 0,
-        type: Number,
+    currentLlama: {
+        default: '',
+        type: String,
     },
 })
 
