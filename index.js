@@ -42,7 +42,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 app.use(
     '/api/v1/users/:id',
     ClerkExpressRequireAuth,
-    checkForGoalCompletion,
+    // checkForGoalCompletion,
     userRoutes
 )
 app.use('/api/v1/users/:id/emails', ClerkExpressRequireAuth, emailRoutes)
@@ -51,7 +51,7 @@ app.use('/api/v1/users/:id/checklist', ClerkExpressRequireAuth, checklistRoutes)
 app.use(
     '/api/v1/users/:id/tasks',
     ClerkExpressRequireAuth,
-    checkForGoalCompletion,
+    // checkForGoalCompletion,
     taskRoutes
 )
 app.use(
@@ -62,7 +62,7 @@ app.use(
 app.use(
     '/api/v1/users/:id/gamification',
     ClerkExpressRequireAuth,
-    checkForGoalCompletion,
+    // checkForGoalCompletion,
     gamificationRoutes
 )
 

@@ -182,6 +182,16 @@ exports.getLeaderBoards = async (req, res, next) => {
             })
         }
 
+        let unlockedTheGoldenBoi = userStats.filter((s) => s.level > 9)
+
+        let unlockedTheGoldenBoiUsers = []
+        for await (let stats of unlockedTheGoldenBoi) {
+            let user = await getUser(stats.user)
+            unlockedTheGoldenBoiUsers.push({
+                name: user.first_name + ' ' + user.last_name,
+            })
+        }
+
         return res.status(200).json({
             sevenDayStreakWinners,
             highestStreakCountWinners,
@@ -190,6 +200,7 @@ exports.getLeaderBoards = async (req, res, next) => {
             usersWhoFoundLlamaThisWeekWinners,
             mostTasksUsers,
             userAccounts2,
+            unlockedTheGoldenBoiUsers,
         })
     } catch (e) {
         console.log(e)
