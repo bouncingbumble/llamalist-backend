@@ -11,17 +11,13 @@ const {
     differenceInDays,
 } = require('date-fns')
 
-exports.checkForGoalCompletion = async (req, res, next) => {
+exports.checkForGoalCompletion = async (req) => {
     try {
         let tasks = await db.Task.find({ user: req.params.id }).populate(
             'labels checklist'
         )
 
         let userStats = await db.UserStats.findOne({ user: req.params.id })
-
-        if (req.body.didVisitLlamaLand) {
-            userStats.didVisitLlamaLand = true
-        }
 
         let isFirstTimeCompleted = [false, false, false]
         let didCompleteLevel = false
@@ -69,11 +65,8 @@ exports.checkForGoalCompletion = async (req, res, next) => {
                 },
             })
         }
-
-        return next()
     } catch (error) {
         console.log(error)
-        return next()
     }
 }
 

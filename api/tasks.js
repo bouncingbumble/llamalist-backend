@@ -1,6 +1,8 @@
 const db = require('../db')
+const { checkForGoalCompletion } = require('../middleware/gamification')
 
 exports.createTask = async (req, res, next) => {
+    checkForGoalCompletion(req)
     let userId = req.params.id
 
     try {
@@ -73,6 +75,7 @@ exports.getNumCompletedTasks = async (req, res, next) => {
 }
 
 exports.updateTask = async (req, res, next) => {
+    checkForGoalCompletion(req)
     try {
         let task = await db.Task.findByIdAndUpdate(
             req.params.taskId,

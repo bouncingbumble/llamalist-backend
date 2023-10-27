@@ -1,5 +1,8 @@
 const db = require('../db')
-const { checkStreak } = require('../middleware/gamification')
+const {
+    checkStreak,
+    checkForGoalCompletion,
+} = require('../middleware/gamification')
 const { sendText } = require('./text')
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 const { v4: uuidv4 } = require('uuid')
@@ -21,6 +24,7 @@ exports.getUserStats = async (req, res, next) => {
 }
 
 exports.updateUserStats = async (req, res, next) => {
+    checkForGoalCompletion(req)
     const user = req.params.id
 
     //weird behavior with saving array of streak dates so we remove,
@@ -73,6 +77,7 @@ exports.getUserSettings = async (req, res, next) => {
 }
 
 exports.updateUserSettings = async (req, res, next) => {
+    checkForGoalCompletion(req)
     const user = req.params.id
 
     try {

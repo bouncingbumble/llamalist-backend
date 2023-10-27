@@ -5,6 +5,7 @@ var previousSunday = require('date-fns/previousMonday')
 var addDays = require('date-fns/addDays')
 const clerk = require('@clerk/clerk-sdk-node')
 const { getUser, getUsers } = require('../clerk/api')
+const { checkForGoalCompletion } = require('../middleware/gamification')
 
 exports.completedGoal = async (req, res, next) => {
     try {
@@ -208,6 +209,7 @@ exports.getLeaderBoards = async (req, res, next) => {
 }
 
 exports.updateHighestStreak = async (req, res, next) => {
+    checkForGoalCompletion(req)
     const user = req.params.id
 
     //weird behavior with saving array of streak dates so we remove,
