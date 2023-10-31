@@ -15,6 +15,7 @@ const labelRoutes = require('./routes/labels')
 const emailRoutes = require('./routes/emails')
 const gamificationRoutes = require('./routes/gamification')
 const checklistRoutes = require('./routes/checklist')
+const stripeRoutes = require('./routes/stripe')
 const initializeSocket = require('./util/socket')
 const {
     setDailyFunFact,
@@ -28,6 +29,7 @@ const { checkForGoalCompletion } = require('./middleware/gamification')
 const { incomingEmail } = require('./api/email')
 const { getUserByPhoneNumber } = require('./clerk/api')
 const { incomingText } = require('./api/text')
+const { webhook } = require('./api/stripe')
 
 global.io = require('socket.io')(server, {
     cors: { origin: [process.env.FRONTEND, process.env.NETLIFY_FRONTEND] },
@@ -67,6 +69,9 @@ app.get('/api/v1/users/:id/llama', async (req, res) => {
     const llama = await db.Llama.findOne()
     res.status(200).json(llama)
 })
+
+app.use('/api/v1/users/:id/stripe', stripeRoutes)
+app.post('/api/v1/stripe/webhook', webhook)
 
 setDailyFunFact()
 setGoldenLlamaLocation()

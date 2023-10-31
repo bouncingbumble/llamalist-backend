@@ -29,6 +29,10 @@ const userSettingsSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    isPaid: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 const userSettings = mongoose.model('UserSettings', userSettingsSchema)
