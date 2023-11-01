@@ -14,6 +14,10 @@ const userSettingsSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    microsoftUserId: {
+        type: String,
+        default: '',
+    },
     hideSectionWelcomeMessages: {
         default: {
             all: false,
