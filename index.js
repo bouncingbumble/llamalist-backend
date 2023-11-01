@@ -26,7 +26,7 @@ const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
 const { incomingEmail } = require('./api/email')
-const { getUserByPhoneNumber } = require('./clerk/api')
+const { getTokenFromMsId } = require('./clerk/api')
 const { incomingText } = require('./api/text')
 
 global.io = require('socket.io')(server, {
@@ -55,13 +55,9 @@ app.use(
     gamificationRoutes
 )
 
-app.get('/api/v1/llama', async (req, res) => {
-    const llama = await db.Llama.findOne()
-    res.status(200).json(llama)
-})
-
-app.post('/api/v1/incomingEmail', incomingEmail)
 app.post('/api/v1/incomingSMS', incomingText)
+app.post('/api/v1/incomingEmail', incomingEmail)
+app.get('/api/v1/tokenFromMsId/:msId', getTokenFromMsId)
 
 app.get('/api/v1/users/:id/llama', async (req, res) => {
     const llama = await db.Llama.findOne()
