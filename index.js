@@ -61,6 +61,12 @@ app.post('/api/v1/incomingSMS', incomingText)
 app.post('/api/v1/incomingEmail', incomingEmail)
 app.get('/api/v1/tokenFromMsId/:msId', getTokenFromMsId)
 
+//need for llama on website
+app.get('/api/v1/llama', async (req, res) => {
+    const llama = await db.Llama.findOne()
+    res.status(200).json(llama)
+})
+
 app.get('/api/v1/users/:id/llama', async (req, res) => {
     const llama = await db.Llama.findOne()
     res.status(200).json(llama)
