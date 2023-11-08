@@ -264,9 +264,9 @@ const levels = [
             title: (name) => `Complete 15 tasks before their due date`,
             isCompleted: (tasks, userStats) =>
                 tasks
-                    .filter((t) => t.due && t.completedDate)
+                    .filter((t) => t.due !== null && t.completedDate)
                     .map((t) => new Date(t.due) < new Date(t.completedDate))
-                    .length > 2,
+                    .length > 14,
         },
     ],
     [
