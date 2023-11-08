@@ -25,7 +25,7 @@ exports.incomingText = async (req, res, next) => {
                 })
 
                 io.emit('new task', {
-                    userId: user.id,
+                    userId: user.user,
                 })
 
                 this.sendText(
