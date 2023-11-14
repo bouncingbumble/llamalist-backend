@@ -1,4 +1,5 @@
 const db = require('../db')
+const { checkForGoalCompletion } = require('../middleware/gamification')
 
 exports.createChecklistItem = async (req, res, next) => {
     const taskId = req.params.taskId
@@ -12,6 +13,9 @@ exports.createChecklistItem = async (req, res, next) => {
         let task = await db.Task.findById(taskId)
         task.checklist.push(createdChecklistItem._id)
         await task.save()
+
+        // check middlware after task updates
+        checkForGoalCompletion(req)
 
         if (req.headers.referer === `${process.env.FRONTEND}/`) {
             io.emit('newTasksMicrosoft', req.params.id)

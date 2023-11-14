@@ -2,7 +2,6 @@ const db = require('../db')
 const { checkForGoalCompletion } = require('../middleware/gamification')
 
 exports.createTask = async (req, res, next) => {
-    checkForGoalCompletion(req)
     let userId = req.params.id
 
     try {
@@ -10,6 +9,7 @@ exports.createTask = async (req, res, next) => {
             ...req.body,
             user: userId,
         })
+        checkForGoalCompletion(req)
 
         return res.status(200).json(task)
     } catch (err) {
@@ -75,7 +75,6 @@ exports.getNumCompletedTasks = async (req, res, next) => {
 }
 
 exports.updateTask = async (req, res, next) => {
-    checkForGoalCompletion(req)
     try {
         let task = await db.Task.findByIdAndUpdate(
             req.params.taskId,
@@ -84,6 +83,9 @@ exports.updateTask = async (req, res, next) => {
                 new: true,
             }
         ).populate('labels checklist')
+
+        // check middleware after task updates
+        checkForGoalCompletion(req)
 
         if (req.body.completedDate) {
             let userStats = await db.UserStats.findOne({ user: req.params.id })
