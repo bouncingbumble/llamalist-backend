@@ -73,7 +73,7 @@ exports.checkForGoalCompletion = async (req) => {
 const levels = [
     [
         {
-            title: 'Add three tasks',
+            title: 'Add your first task',
             isCompleted: (tasks) =>
                 tasks.filter((t) => t.name.length > 0).length > 2
                     ? true
@@ -116,7 +116,7 @@ const levels = [
     ],
     [
         {
-            title: 'Add a a label to a task',
+            title: 'Add a label to a task',
             isCompleted: (tasks, userStats) =>
                 tasks.filter((t) => t.labels.length > 0).length > 2
                     ? true
@@ -164,9 +164,9 @@ const levels = [
         {
             title: () => 'Use 3 labels',
             isCompleted: (tasks, userStats) =>
-                tasks.filter((t) => t.labels.length > 0).length > 4
-                    ? true
-                    : false,
+                tasks
+                    .map((t) => t.labels.length)
+                    .reduce((sum, a) => sum + a, 0) >= 5,
         },
         {
             title: () => 'Create fifteen tasks',

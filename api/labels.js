@@ -1,4 +1,5 @@
 const db = require('../db')
+const { checkForGoalCompletion } = require('../middleware/gamification')
 
 exports.createLabel = async (req, res, next) => {
     const userId = req.params.id
@@ -22,6 +23,8 @@ exports.createLabel = async (req, res, next) => {
         task.labels = [...task.labels, createdLabel._id]
         task.isInbox = false
         await task.save()
+
+        checkForGoalCompletion(req)
 
         if (req.headers.referer === `${process.env.FRONTEND}/`) {
             io.emit('newLabelsMicrosoft', userId)
