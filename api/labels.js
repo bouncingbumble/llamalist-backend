@@ -124,18 +124,13 @@ exports.deleteLabel = async (req, res, next) => {
             await t.save()
         }
 
-        if (response === null) {
+        if (response) {
+            io.emit('newLabels', userId)
+            return res.status(200).json({ message: 'successfully deleted' })
+        } else {
             let error = new Error()
             error.message = 'could not find document to delete'
-            next(error)
-        } else {
-            if (req.headers.referer === `${process.env.FRONTEND}/`) {
-                io.emit('newLabelsMicrosoft', userId)
-            } else {
-                io.emit('newLabels', userId)
-            }
-
-            return res.status(200).json({ message: 'successfully deleted' })
+            return next(error)
         }
     } catch (error) {
         return next(error)
