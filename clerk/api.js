@@ -1,14 +1,16 @@
-var axios = require('axios')
 const db = require('../db')
-
-axios.defaults.headers.common[
-    'Authorization'
-] = `Bearer ${process.env.CLERK_API_KEY}`
 
 exports.getUser = async (userId) => {
     try {
-        const res = await axios.get(`https://api.clerk.com/v1/users/${userId}`)
-        return res.data
+        return await db.UserSettings.findById(userId)
+    } catch (error) {
+        return error
+    }
+}
+
+exports.getUsers = async () => {
+    try {
+        return await db.UserSettings.find()
     } catch (error) {
         return error
     }
@@ -16,37 +18,11 @@ exports.getUser = async (userId) => {
 
 exports.getUserByEmail = async (email) => {
     try {
-        const res = await axios.get(
-            `https://api.clerk.com/v1/users?email_address=${email}`
-        )
-        console.log(res.data)
+        const user = await db.UserSettings.findOne({ email })
 
-        return res.data[0]
+        return user
     } catch (error) {
         console.log(error)
-        return error
-    }
-}
-
-exports.getUserByPhoneNumber = async (number) => {
-    let numberFormatted = number.replace(number.charAt(0), '%2B')
-    try {
-        const res = await axios.get(
-            `https://api.clerk.com/v1/users?phone_number=${numberFormatted}`
-        )
-
-        return res.data[0]
-    } catch (error) {
-        console.log(error)
-        return error
-    }
-}
-
-exports.getUsers = async () => {
-    try {
-        const res = await axios.get(`https://api.clerk.com/v1/users`)
-        return res.data
-    } catch (error) {
         return error
     }
 }
