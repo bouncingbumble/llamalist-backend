@@ -49,6 +49,7 @@ exports.signin = async (req, res, next) => {
 
         res.status(200).json(token)
     } catch (err) {
+        console.log(err)
         return next({
             status: 400,
             message: 'Cannot find user :(',

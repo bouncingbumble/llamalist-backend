@@ -45,8 +45,6 @@ const userSettingsSchema = new mongoose.Schema({
     },
 })
 
-const userSettings = mongoose.model('UserSettings', userSettingsSchema)
-
 /**
  * Pre-save hook to hash password
  */
@@ -69,4 +67,6 @@ userSettingsSchema.methods.comparePassword = function (candidatePassword) {
     return bcrypt.compare(candidatePassword, this.password)
 }
 
-module.exports = userSettings
+const UserSettings = mongoose.model('UserSettings', userSettingsSchema)
+
+module.exports = UserSettings
