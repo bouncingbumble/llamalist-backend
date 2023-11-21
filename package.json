@@ -13,7 +13,7 @@
         "axios": "^1.6.0",
         "azure-ad-verify-token": "^3.0.0",
         "azure-jwt-verify": "^1.0.0",
-        "bcrypt": "^5.0.0",
+        "bcrypt": "^5.1.1",
         "body-parser": "^1.18.3",
         "btoa": "^1.2.1",
         "cors": "^2.8.5",

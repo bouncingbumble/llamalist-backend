@@ -1,6 +1,4 @@
 require('dotenv').config()
-const ClerkExpressRequireAuth =
-    require('@clerk/clerk-sdk-node').ClerkExpressRequireAuth()
 const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
@@ -11,6 +9,7 @@ const errorHandler = require('./util/error')
 const taskRoutes = require('./routes/tasks')
 const completedTasksRoutes = require('./routes/completed')
 const userRoutes = require('./routes/users')
+const authRoutes = require('./routes/auth')
 const labelRoutes = require('./routes/labels')
 const emailRoutes = require('./routes/emails')
 const gamificationRoutes = require('./routes/gamification')
@@ -30,6 +29,7 @@ const { incomingEmail } = require('./api/email')
 const { getTokenFromMsId } = require('./clerk/api')
 const { incomingText } = require('./api/text')
 const { webhook } = require('./api/stripe')
+const { loginRequired, ensureCorrectUser } = require('./middleware/auth')
 
 global.io = require('socket.io')(server, {
     cors: { origin: [process.env.FRONTEND, process.env.NETLIFY_FRONTEND] },
@@ -41,19 +41,37 @@ app.use(cors())
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
 
-app.use('/api/v1/users/:id', ClerkExpressRequireAuth, userRoutes)
-app.use('/api/v1/users/:id/emails', ClerkExpressRequireAuth, emailRoutes)
-app.use('/api/v1/users/:id/labels', ClerkExpressRequireAuth, labelRoutes)
-app.use('/api/v1/users/:id/checklist', ClerkExpressRequireAuth, checklistRoutes)
-app.use('/api/v1/users/:id/tasks', ClerkExpressRequireAuth, taskRoutes)
+app.use('/api/v1/users/:id', loginRequired, ensureCorrectUser, userRoutes)
+app.use('/api/v1/auth', authRoutes)
+app.use(
+    '/api/v1/users/:id/emails',
+    loginRequired,
+    ensureCorrectUser,
+    emailRoutes
+)
+app.use(
+    '/api/v1/users/:id/labels',
+    loginRequired,
+    ensureCorrectUser,
+    labelRoutes
+)
+app.use(
+    '/api/v1/users/:id/checklist',
+    loginRequired,
+    ensureCorrectUser,
+    checklistRoutes
+)
+app.use('/api/v1/users/:id/tasks', loginRequired, ensureCorrectUser, taskRoutes)
 app.use(
     '/api/v1/users/:id/completedTasks',
-    ClerkExpressRequireAuth,
+    loginRequired,
+    ensureCorrectUser,
     completedTasksRoutes
 )
 app.use(
     '/api/v1/users/:id/gamification',
-    ClerkExpressRequireAuth,
+    loginRequired,
+    ensureCorrectUser,
     gamificationRoutes
 )
 
