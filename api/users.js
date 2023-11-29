@@ -73,13 +73,8 @@ exports.updateUserStats = async (req, res, next) => {
 }
 
 exports.getUserSettings = async (req, res, next) => {
-    const user = req.params.id
     try {
-        let settings = await db.UserSettings.findOne({ user })
-
-        if (settings === null) {
-            settings = await db.UserSettings.create({ user })
-        }
+        let settings = await db.UserSettings.findById(req.params.id)
 
         return res.status(200).json(settings)
     } catch (err) {
@@ -89,11 +84,10 @@ exports.getUserSettings = async (req, res, next) => {
 
 exports.updateUserSettings = async (req, res, next) => {
     checkForGoalCompletion(req)
-    const user = req.params.id
 
     try {
-        let updatedSettings = await db.UserSettings.findOneAndUpdate(
-            { user },
+        let updatedSettings = await db.UserSettings.findByIdAndUpdate(
+            req.params.id,
             { ...req.body },
             { new: true }
         )

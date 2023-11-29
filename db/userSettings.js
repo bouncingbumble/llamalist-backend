@@ -12,6 +12,10 @@ const userSettingsSchema = new mongoose.Schema({
         type: String,
         select: false,
     },
+    name: {
+        type: String,
+        default: '',
+    },
     phoneNumber: {
         type: String,
         default: '',
