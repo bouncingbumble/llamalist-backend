@@ -36,20 +36,20 @@ exports.incomingEmail = async (req, res, next) => {
         next(err)
     }
 
-    console.log(`trying to create email task by user ${foundUser.id}`)
+    console.log(`trying to create email task by user ${foundUser._id}`)
 
     try {
         await db.Task.create({
             name,
             notes,
-            user: foundUser.id,
+            user: foundUser._id,
             isInbox: true,
             key: uuidv4(),
             from: 'email',
         })
 
         io.emit('new task', {
-            userId: foundUser.id,
+            userId: foundUser._id,
         })
     } catch (err) {
         console.log(err)

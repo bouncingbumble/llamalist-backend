@@ -4,7 +4,6 @@ const {
     checkForGoalCompletion,
 } = require('../middleware/gamification')
 const { sendText } = require('./text')
-const { getSignInJWT } = require('../clerk/api')
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 const { v4: uuidv4 } = require('uuid')
 
@@ -19,15 +18,6 @@ exports.getUserStats = async (req, res, next) => {
         }
 
         return res.status(200).json(stats)
-    } catch (err) {
-        return next(err)
-    }
-}
-
-exports.getSignInToken = async (req, res, next) => {
-    try {
-        const token = await getSignInJWT(req.params.id)
-        return res.status(200).json(token)
     } catch (err) {
         return next(err)
     }

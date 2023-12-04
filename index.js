@@ -26,7 +26,6 @@ const { setGoldenLlamaLocation } = require('./jobs/goldenLlama')
 const db = require('./db')
 const { checkForGoalCompletion } = require('./middleware/gamification')
 const { incomingEmail } = require('./api/email')
-const { getTokenFromMsId } = require('./clerk/api')
 const { incomingText } = require('./api/text')
 const { webhook } = require('./api/stripe')
 const { loginRequired, ensureCorrectUser } = require('./middleware/auth')
@@ -77,7 +76,6 @@ app.use(
 
 app.post('/api/v1/incomingSMS', incomingText)
 app.post('/api/v1/incomingEmail', incomingEmail)
-app.get('/api/v1/tokenFromMsId/:msId', getTokenFromMsId)
 
 //need for llama on website
 app.get('/api/v1/llama', async (req, res) => {

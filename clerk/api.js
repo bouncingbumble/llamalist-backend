@@ -26,32 +26,3 @@ exports.getUserByEmail = async (email) => {
         return error
     }
 }
-
-exports.getTokenFromMsId = async (req, res, next) => {
-    try {
-        let token = null
-        const response = await db.UserSettings.findOne({
-            microsoftUserId: req.params.msId,
-        })
-        if (response) {
-            token = await getSignInJWT(response.user)
-        }
-        return res.status(200).json(token)
-    } catch (error) {
-        return next(error)
-    }
-}
-
-const getSignInJWT = async (userId) => {
-    try {
-        const res = await axios.post(
-            'https://api.clerk.com/v1/sign_in_tokens',
-            { user_id: userId }
-        )
-        return res.data.token
-    } catch (error) {
-        return error
-    }
-}
-
-exports.getSignInJWT = getSignInJWT

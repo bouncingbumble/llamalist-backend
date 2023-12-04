@@ -18,14 +18,14 @@ exports.incomingText = async (req, res, next) => {
             try {
                 await db.Task.create({
                     name: messageBody,
-                    user: user.user,
+                    user: user._id,
                     isInbox: true,
                     key: uuidv4(),
                     from: 'text',
                 })
 
                 io.emit('new task', {
-                    userId: user.user,
+                    userId: user._id,
                 })
 
                 this.sendText(
