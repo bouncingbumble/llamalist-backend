@@ -1,9 +1,7 @@
 const db = require('../db')
-const mongoose = require('mongoose')
 var previousMonday = require('date-fns/previousMonday')
 var previousSunday = require('date-fns/previousMonday')
 var addDays = require('date-fns/addDays')
-const clerk = require('@clerk/clerk-sdk-node')
 const { getUser, getUsers } = require('../clerk/api')
 const { checkForGoalCompletion } = require('../middleware/gamification')
 
@@ -60,7 +58,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         let sevenDayStreakWinners = []
         for await (let userId of winningUsers) {
             let user = await getUser(userId)
-            sevenDayStreakWinners.push(user.first_name + ' ' + user.last_name)
+            sevenDayStreakWinners.push(user.llamaName)
         }
 
         //get longest streaks
@@ -71,7 +69,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         for await (let stats of highestStreakCounts) {
             let user = await getUser(stats.user)
             highestStreakCountWinners.push({
-                name: user.first_name + ' ' + user.last_name,
+                name: user.llamaName,
                 highestStreakCount: stats.highestStreakCount,
             })
         }
@@ -84,7 +82,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         for await (let stats of highestLlamaLandScores) {
             let user = await getUser(stats.user)
             highestLlamaLandScoreWinners.push({
-                name: user.first_name + ' ' + user.last_name,
+                name: user.llamaName,
                 llamaLandHighScore: stats.llamaLandHighScore,
             })
         }
@@ -99,7 +97,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         for await (let stats of mostLlamasFound) {
             let user = await getUser(stats.user)
             mostLlamasFoundUsers.push({
-                name: user.first_name + ' ' + user.last_name,
+                name: user.llamaName,
                 goldenLlamasFound: stats.goldenLlamasFound,
             })
         }
@@ -122,9 +120,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         let usersWhoFoundLlamaThisWeekWinners = []
         for await (let userId of usersWhoFoundLlamaThisWeek) {
             let user = await getUser(userId)
-            usersWhoFoundLlamaThisWeekWinners.push(
-                user.first_name + ' ' + user.last_name
-            )
+            usersWhoFoundLlamaThisWeekWinners.push(user.llamaName)
         }
 
         //get users who have most tasks comppleted
@@ -166,7 +162,7 @@ exports.getLeaderBoards = async (req, res, next) => {
 
         for await (let user of userAccounts2) {
             let u = await getUser(user.userId)
-            user.name = u.first_name + ' ' + u.last_name
+            user.name = u.llamaName
         }
 
         usersAccounts.sort((a, b) => b.numTasks - a.numTasks)
@@ -177,7 +173,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         for await (let user of mostTasksFound) {
             let u = await getUser(user.userId)
             mostTasksUsers.push({
-                name: u.first_name + ' ' + u.last_name,
+                name: u.llamaName,
                 numTasks: user.numTasks,
                 numTasksCompletedLastWeek: user.numTasksCompletedLastWeek,
             })
@@ -189,7 +185,7 @@ exports.getLeaderBoards = async (req, res, next) => {
         for await (let stats of unlockedTheGoldenBoi) {
             let user = await getUser(stats.user)
             unlockedTheGoldenBoiUsers.push({
-                name: user.first_name + ' ' + user.last_name,
+                name: llamaName,
             })
         }
 

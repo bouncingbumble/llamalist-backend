@@ -4,7 +4,6 @@ const {
     checkForGoalCompletion,
 } = require('../middleware/gamification')
 const { sendText } = require('./text')
-const { getSignInJWT } = require('../clerk/api')
 const stripe = require('stripe')(process.env.STRIPE_KEY)
 const { v4: uuidv4 } = require('uuid')
 
@@ -19,15 +18,6 @@ exports.getUserStats = async (req, res, next) => {
         }
 
         return res.status(200).json(stats)
-    } catch (err) {
-        return next(err)
-    }
-}
-
-exports.getSignInToken = async (req, res, next) => {
-    try {
-        const token = await getSignInJWT(req.params.id)
-        return res.status(200).json(token)
     } catch (err) {
         return next(err)
     }
@@ -73,13 +63,8 @@ exports.updateUserStats = async (req, res, next) => {
 }
 
 exports.getUserSettings = async (req, res, next) => {
-    const user = req.params.id
     try {
-        let settings = await db.UserSettings.findOne({ user })
-
-        if (settings === null) {
-            settings = await db.UserSettings.create({ user })
-        }
+        let settings = await db.UserSettings.findById(req.params.id)
 
         return res.status(200).json(settings)
     } catch (err) {
@@ -89,11 +74,10 @@ exports.getUserSettings = async (req, res, next) => {
 
 exports.updateUserSettings = async (req, res, next) => {
     checkForGoalCompletion(req)
-    const user = req.params.id
 
     try {
-        let updatedSettings = await db.UserSettings.findOneAndUpdate(
-            { user },
+        let updatedSettings = await db.UserSettings.findByIdAndUpdate(
+            req.params.id,
             { ...req.body },
             { new: true }
         )

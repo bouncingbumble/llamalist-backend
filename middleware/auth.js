@@ -49,30 +49,3 @@ exports.ensureCorrectUser = (req, res, next) => {
         })
     }
 }
-
-exports.ensureAdmin = (req, res, next) => {
-    try {
-        const token = req.headers.authorization.split(' ')[1]
-
-        jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
-            if (
-                decoded &&
-                process.env.OFFICE_OTTER_ADMIN.split(' ').includes(decoded._id)
-            ) {
-                return next()
-            } else {
-                console.log(error)
-                return next({
-                    status: 401,
-                    message: 'Not Admin',
-                })
-            }
-        })
-    } catch (error) {
-        console.log(error)
-        return next({
-            status: 401,
-            message: 'Not Admin',
-        })
-    }
-}
