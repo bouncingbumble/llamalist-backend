@@ -94,36 +94,6 @@ app.post('/api/v1/stripe/webhook', webhook)
 setDailyFunFact()
 setGoldenLlamaLocation()
 
-const initProductionLlama = async () => {
-    if (process.env.ENVIRONMENT === 'production') {
-        const newLlama = await db.Llama.create({
-            funFactDuration: 3560,
-            funFactIndex: 30,
-            funFactSequence: [
-                "If you ever see a drink labeled Kuzco's poison,",
-                500,
-                "If you ever see a drink labeled Kuzco's poison, DO NOT DRINK IT!",
-                500,
-            ],
-            funFactSpeed: 40,
-            funFactText:
-                "If you ever see a drink labeled Kuzco's poison, DO NOT DRINK IT!",
-            goldenLlamaIndex: 6,
-            isCustomFunFact: false,
-            lastGoldenLlamaUpdate: new Date('2023-10-22T05:00:00.000Z'),
-            previousGoldenLlamaUpdate: new Date('2023-10-15T05:00:00.000Z'),
-        })
-        return newLlama
-    } else {
-        return 'not production'
-    }
-}
-
-app.use('/api/v1/createNewLlamaBoi', async (req, res) => {
-    const data = await initProductionLlama()
-    res.status(200).json(data)
-})
-
 app.use((req, res, next) => {
     let err = new Error('Not Found')
     err.status = 404
